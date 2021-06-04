@@ -1,5 +1,20 @@
-![](delivery-hackthebox.jpg)
-
+![](Images/delivery-hackthebox.jpg)
+# About the Delivery
+Delivery is an easy difficulty Linux machine that features the support ticketing system osTicket where it is
+possible by using a technique called TicketTrick, a non-authenticated user to be granted with access to a
+temporary company email. This "feature" permits the registration at MatterMost and the join of internal
+team channel. It is revealed through that channel that users have been using same password variant
+"PleaseSubscribe!" for internal access. In channel it is also disclosed the credentials for the mail user which
+can give the initial foothold to the system. While enumerating the file system we come across the
+mattermost configuration file which reveals MySQL database credentials. By having access to the database
+a password hash can be extracted from Users table and crack it using the "PleaseSubscribe!" pattern. After
+cracking the hash it is possible to login as user root.
+* Skills Required :
+    Basic web enumeration
+    / Brute force
+* Skills Learned :
+    Email impersonation
+    / Intermediate password cracking
 # Enumeration 
 
 ## Nmap scan
@@ -24,43 +39,43 @@ Service detection performed. Please report any incorrect results at https://nmap
 ```
 We got a port 80 in our nmap scan. So we can hope into that website and take a look at it.
 
-![](web.png)
+![](Images/web.png)
 
 We can see **helpdesk** site and **contact us**. After we add into that address our host file we can see the help desk delivery site and contact us. 
 
-![](helpdesk.png)
+![](Images/helpdesk.png)
 
 Contact us  redirect to the **Mattermost login page**.
 
-![](mattermost.png)
+![](Images/mattermost.png)
 
 I try to find some exploit to osTicket. Here is the exploitDB site.
 
-![](expolitdb.png)
+![](Images/expolitdb.png)
 
 After reading exploits I try to make a ticket.
 
-![](ticket%20creating.png)
+![](Images/ticket%20creating.png)
 
 After I send it that leaked email address.
 
-![](after%20send.png)
+![](Images/after%20send.png)
 
 So I hop into that **Check Ticket Status** tab. For look into our ticket. When you log into your account you can see your ticket. 
 
-![](our%20ticket.png)
+![](Images/our%20ticket.png)
 
 Next thing we need to do creating account on **Mattermost** . We can use that email they gave us. Your password must be something like this *Defalt#123* .
 
-![](mattermost%20acc%20create.png)
+![](Images/mattermost%20acc%20create.png)
 
 After we create account they send us the verify email. Take a look into our **View Ticket Thread** tab.
 
-![](verifying%20email.png)
+![](Images/verifying%20email.png)
 
 After we go into that link. You need to log into that account you created. You can choose *Internal server* whatever it shows in first page after you log in.
 
-![](inside%20matermost.png)
+![](Images/inside%20matermost.png)
 
 I think we got our credentials to our user machine. 
 Credentials :
@@ -100,7 +115,7 @@ mattermost:x:998:998::/home/mattermost:/bin/sh
 ```
 Nothing Interesting to me. But after some time I look into our mattermost chat. I found a hint on that chat. Thx to ippsec we got a hint for root passwd. He provide a great hint.
 
-![](hint.png)
+![](Images/hint.png)
 
 So we can use **hashcat** to generate password list to crack **root** password. Because we cant use rockyou.txt in this matter. First make a sample to our password list like this.
 
