@@ -1,7 +1,7 @@
 # Vulnversity
   Learn about active recon, web app attacks and privilege escalation.
   
-![](JFYfwL8.png)
+![](Images/JFYfwL8.png)
 
 ## Nmap scan
 Here is the task 2 answers all in this nmap scan. 
@@ -54,7 +54,7 @@ Service detection performed. Please report any incorrect results at https://nmap
 ```
 # Web page
 According to the nmap scan we found nice web page in the port 3333
-![](webpage.png)
+![](Images/webpage.png)
 
 ## Task 3 
 1.  What is the directory that has an upload form page?
@@ -84,7 +84,7 @@ GENERATED WORDS: 4612
 ==> DIRECTORY: http://10.10.205.62:3333/js/
 ```
 You can upload images from /internal/ directory.
-![](upload.png)
+![](Images/upload.png)
 
 ## Task 4
 1. Try upload a few file types to the server, what common extension seems to be blocked? 
