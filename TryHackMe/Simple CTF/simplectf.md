@@ -201,7 +201,7 @@ mitch@Machine:/dev/shm$ sudo -l
 User mitch may run the following commands on Machine:
     (root) NOPASSWD: /usr/bin/vim
 ```
-Seems like **vim**, we found our way into the root.
+Seems like **vim** being naughty, we found our way into the root.
 
 ##  What's the root flag?
 We can use this command to execute the vim as a root and get a shell as a root.
