@@ -160,4 +160,4 @@ THM{Flag_here}
 We pwn it... Thx for reading 
 
 
-<img src="https://tenor.com/7FNY.gif" width="40" height="40"/>
+![](https://tenor.com/7FNY.gif)
