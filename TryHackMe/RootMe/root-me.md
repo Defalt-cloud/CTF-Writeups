@@ -157,7 +157,6 @@ THM{Flag_here}
 # 
 ```
 
-We pwn it... Thx for reading 
+We pwn it... Thx for reading
 
-
-![](https://tenor.com/7FNY.gif)
+![](Images/tenor.gif)
