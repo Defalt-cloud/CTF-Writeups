@@ -1,0 +1,22 @@
+
+-----------------
+DIRB v2.22    
+By The Dark Raver
+-----------------
+
+OUTPUT_FILE: dirb.scan
+START_TIME: Mon Jun  7 15:01:41 2021
+URL_BASE: http://10.10.88.87/
+WORDLIST_FILES: /opt/seclist/Discovery/Web-Content/raft-medium-directories.txt
+OPTION: Not Recursive
+
+-----------------
+
+GENERATED WORDS: 29984
+
+---- Scanning URL: http://10.10.88.87/ ----
+==> DIRECTORY: http://10.10.88.87/js/
+==> DIRECTORY: http://10.10.88.87/css/
+==> DIRECTORY: http://10.10.88.87/uploads/
+==> DIRECTORY: http://10.10.88.87/panel/
++ http://10.10.88.87/server-status (CODE:403|SIZE:276)
