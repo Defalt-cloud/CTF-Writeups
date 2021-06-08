@@ -1,0 +1,92 @@
+hashcat (v6.1.1) starting...
+
+OpenCL API (OpenCL 1.2 pocl 1.6, None+Asserts, LLVM 9.0.1, RELOC, SLEEF, DISTRO, POCL_DEBUG) - Platform #1 [The pocl project]
+=============================================================================================================================
+* Device #1: pthread-Intel(R) Core(TM) i7-10750H CPU @ 2.60GHz, 2884/2948 MB (1024 MB allocatable), 4MCU
+
+Minimum password length supported by kernel: 0
+Maximum password length supported by kernel: 256
+
+Counting lines in charlie-hash.txt...[2KCounted lines in charlie-hash.txt...[2KParsed Hashes: 1/1 (100.00%)[2KParsed Hashes: 1/1 (100.00%)[2KSorting hashes...[2KSorted hashes...[2KRemoving duplicate hashes...[2KRemoved duplicate hashes...[2KSorting salts...[2KSorted salts...[2KComparing hashes with potfile entries...[2KCompared hashes with potfile entries...[2KGenerating bitmap tables...[2KGenerated bitmap tables...[2KHashes: 1 digests; 1 unique digests, 1 unique salts
+Bitmaps: 16 bits, 65536 entries, 0x0000ffff mask, 262144 bytes, 5/13 rotates
+Rules: 1
+
+Applicable optimizers applied:
+* Zero-Byte
+* Single-Hash
+* Single-Salt
+* Uses-64-Bit
+
+[33mATTENTION! Pure (unoptimized) backend kernels selected.[0m
+[33mUsing pure kernels enables cracking longer passwords but for the price of drastically reduced performance.[0m
+[33mIf you want to switch to optimized backend kernels, append -O to your commandline.[0m
+[33mSee the above message to find out about the exact limits.[0m
+[33m[0m
+Watchdog: Hardware monitoring interface not found on your system.
+Watchdog: Temperature abort trigger disabled.
+
+Initializing device kernels and memory...[2KInitializing backend runtime for device #1...[2KInitialized backend runtime for device #1...[2KHost memory required for this attack: 65 MB
+
+Initialized device kernels and memory...[2KDictionary cache building /opt/seclist/rockyou.txt: 33553434 bytes (23.98%)[2KDictionary cache building /opt/seclist/rockyou.txt: 67106869 bytes (47.96%)[2KDictionary cache built:
+* Filename..: /opt/seclist/rockyou.txt
+* Passwords.: 14344392
+* Bytes.....: 139921507
+* Keyspace..: 14344385
+* Runtime...: 1 sec
+
+[s]tatus [p]ause [b]ypass [c]heckpoint [q]uit => 
+
+Session..........: hashcat
+Status...........: Running
+Hash.Name........: sha512crypt $6$, SHA512 (Unix)
+Hash.Target......: $6$CZJnCPeQWp9/jpNx$khGlFdICJnr8R3JC/jTR2r7DrbFLp8z...WE82X/
+Time.Started.....: Tue Jun  8 16:56:56 2021 (6 mins, 0 secs)
+Time.Estimated...: Tue Jun  8 19:40:55 2021 (2 hours, 37 mins)
+Guess.Base.......: File (/opt/seclist/rockyou.txt)
+Guess.Queue......: 1/1 (100.00%)
+Speed.#1.........:     1458 H/s (7.90ms) @ Accel:16 Loops:1024 Thr:1 Vec:4
+Recovered........: 0/1 (0.00%) Digests
+Progress.........: 521984/14344385 (3.64%)
+Rejected.........: 0/521984 (0.00%)
+Restore.Point....: 521984/14344385 (3.64%)
+Restore.Sub.#1...: Salt:0 Amplifier:0-1 Iteration:3072-4096
+Candidates.#1....: coca13 -> cm1995
+
+[s]tatus [p]ause [b]ypass [c]heckpoint [q]uit => 
+
+Session..........: hashcat
+Status...........: Running
+Hash.Name........: sha512crypt $6$, SHA512 (Unix)
+Hash.Target......: $6$CZJnCPeQWp9/jpNx$khGlFdICJnr8R3JC/jTR2r7DrbFLp8z...WE82X/
+Time.Started.....: Tue Jun  8 16:56:56 2021 (11 mins, 38 secs)
+Time.Estimated...: Tue Jun  8 19:59:56 2021 (2 hours, 51 mins)
+Guess.Base.......: File (/opt/seclist/rockyou.txt)
+Guess.Queue......: 1/1 (100.00%)
+Speed.#1.........:     1300 H/s (9.14ms) @ Accel:16 Loops:1024 Thr:1 Vec:4
+Recovered........: 0/1 (0.00%) Digests
+Progress.........: 973376/14344385 (6.79%)
+Rejected.........: 0/973376 (0.00%)
+Restore.Point....: 973376/14344385 (6.79%)
+Restore.Sub.#1...: Salt:0 Amplifier:0-1 Iteration:2048-3072
+Candidates.#1....: dcwrockyou -> dcba87rez3
+
+[s]tatus [p]ause [b]ypass [c]heckpoint [q]uit => 
+
+                                                 Session..........: hashcat
+Status...........: Quit
+Hash.Name........: sha512crypt $6$, SHA512 (Unix)
+Hash.Target......: $6$CZJnCPeQWp9/jpNx$khGlFdICJnr8R3JC/jTR2r7DrbFLp8z...WE82X/
+Time.Started.....: Tue Jun  8 16:56:56 2021 (11 mins, 43 secs)
+Time.Estimated...: Tue Jun  8 19:59:33 2021 (2 hours, 50 mins)
+Guess.Base.......: File (/opt/seclist/rockyou.txt)
+Guess.Queue......: 1/1 (100.00%)
+Speed.#1.........:     1303 H/s (7.76ms) @ Accel:16 Loops:1024 Thr:1 Vec:4
+Recovered........: 0/1 (0.00%) Digests
+Progress.........: 981056/14344385 (6.84%)
+Rejected.........: 0/981056 (0.00%)
+Restore.Point....: 981056/14344385 (6.84%)
+Restore.Sub.#1...: Salt:0 Amplifier:0-1 Iteration:3072-4096
+Candidates.#1....: cowgirl#1 -> cowan18
+
+Started: Tue Jun  8 16:56:37 2021
+[2KStopped: Tue Jun  8 17:08:41 2021
