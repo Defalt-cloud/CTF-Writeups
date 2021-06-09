@@ -2,6 +2,7 @@
 A Charlie And The Chocolate Factory themed room, revisit Willy Wonka's chocolate factory!
 
 ![](Images/rT335UA.png)
+
 Always start with a nmap scan. 
 ```
 # Nmap 7.91 scan initiated Tue Jun  8 13:13:29 2021 as: nmap -sC -sV -d -A -oN nmap/output 10.10.204.243
