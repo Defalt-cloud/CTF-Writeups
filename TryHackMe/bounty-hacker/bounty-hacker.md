@@ -170,3 +170,6 @@ root.txt
 root@bountyhacker:/root# cat root.txt
 THM{**********}
 ```
+Thx for the reading !!
+
+![](../Chocolate-factory/Images/giphy.gif)
