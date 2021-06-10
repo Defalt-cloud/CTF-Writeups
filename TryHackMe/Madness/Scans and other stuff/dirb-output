@@ -1,0 +1,91 @@
+
+-----------------
+DIRB v2.22    
+By The Dark Raver
+-----------------
+
+OUTPUT_FILE: scans/dirb-output
+START_TIME: Thu Jun 10 17:52:21 2021
+URL_BASE: http://10.10.17.235/
+WORDLIST_FILES: /opt/seclist/Discovery/Web-Content/raft-medium-directories.txt-r
+EXTENSIONS_FILE: ,.php,.html,.txt | 
+(!) FATAL: Error opening words file: ,.php,.html,.txt
+
+-----------------
+DIRB v2.22    
+By The Dark Raver
+-----------------
+
+OUTPUT_FILE: scans/dirb-output
+START_TIME: Thu Jun 10 17:52:38 2021
+URL_BASE: http://10.10.17.235/
+WORDLIST_FILES: /opt/seclist/Discovery/Web-Content/raft-medium-directories.txt
+OPTION: Not Recursive
+EXTENSIONS_FILE: ,.php,.html,.txt | 
+(!) FATAL: Error opening words file: ,.php,.html,.txt
+
+-----------------
+DIRB v2.22    
+By The Dark Raver
+-----------------
+
+OUTPUT_FILE: scans/dirb-output
+START_TIME: Thu Jun 10 17:53:56 2021
+URL_BASE: http://10.10.17.235/
+WORDLIST_FILES: /opt/seclist/Discovery/Web-Content/raft-medium-directories.txt
+OPTION: Not Recursive
+EXTENSIONS_FILE: .php | 
+(!) FATAL: Error opening words file: .php
+
+-----------------
+DIRB v2.22    
+By The Dark Raver
+-----------------
+
+OUTPUT_FILE: scans/dirb-output
+START_TIME: Thu Jun 10 17:55:00 2021
+URL_BASE: http://10.10.17.235/
+WORDLIST_FILES: /opt/seclist/Discovery/Web-Content/raft-medium-directories.txt
+OPTION: Not Recursive
+
+-----------------
+
+GENERATED WORDS: 29984
+
+---- Scanning URL: http://10.10.17.235/ ----
+
+-----------------
+DIRB v2.22    
+By The Dark Raver
+-----------------
+
+OUTPUT_FILE: scans/dirb-output
+START_TIME: Thu Jun 10 17:57:28 2021
+URL_BASE: http://10.10.17.235/
+WORDLIST_FILES: /usr/share/dirb/wordlists/common.txt
+OPTION: Not Recursive
+EXTENSIONS_FILE: .,.html,.php,.txt | 
+(!) FATAL: Error opening words file: .,.html,.php,.txt
+
+-----------------
+DIRB v2.22    
+By The Dark Raver
+-----------------
+
+OUTPUT_FILE: scans/dirb-output
+START_TIME: Thu Jun 10 17:57:49 2021
+URL_BASE: http://10.10.17.235/
+WORDLIST_FILES: /opt/seclist/Discovery/Web-Content/raft-medium-directories.txt
+OPTION: Not Recursive
+
+-----------------
+
+GENERATED WORDS: 29984
+
+---- Scanning URL: http://10.10.17.235/ ----
++ http://10.10.17.235/server-status (CODE:403|SIZE:277)
++ Dumping session state and Quitting.
+
+-----------------
+END_TIME: Thu Jun 10 18:30:56 2021
+DOWNLOADED: 12270 - FOUND: 1
