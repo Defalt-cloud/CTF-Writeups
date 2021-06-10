@@ -1,12 +1,44 @@
+![](Images/rCDF5u6.png)
 Always start with a nmap scan. 
-
 ```
-nmap-output
+# Nmap 7.91 scan initiated Thu Jun 10 16:35:31 2021 as: nmap -sC -sV -A -oN scans/nmap-output 10.10.55.156
+Nmap scan report for 10.10.55.156
+Host is up (0.18s latency).
+Not shown: 968 filtered ports, 29 closed ports
+PORT   STATE SERVICE VERSION
+21/tcp open  ftp     vsftpd 3.0.3
+| ftp-anon: Anonymous FTP login allowed (FTP code 230)
+|_Can't get directory listing: TIMEOUT
+| ftp-syst: 
+|   STAT: 
+| FTP server status:
+|      Connected to ::ffff:10.9.2.182
+|      Logged in as ftp
+|      TYPE: ASCII
+|      No session bandwidth limit
+|      Session timeout in seconds is 300
+|      Control connection is plain text
+|      Data connections will be plain text
+|      At session startup, client count was 3
+|      vsFTPd 3.0.3 - secure, fast, stable
+|_End of status
+22/tcp open  ssh     OpenSSH 7.2p2 Ubuntu 4ubuntu2.8 (Ubuntu Linux; protocol 2.0)
+| ssh-hostkey: 
+|   2048 dc:f8:df:a7:a6:00:6d:18:b0:70:2b:a5:aa:a6:14:3e (RSA)
+|   256 ec:c0:f2:d9:1e:6f:48:7d:38:9a:e3:bb:08:c4:0c:c9 (ECDSA)
+|_  256 a4:1a:15:a5:d4:b1:cf:8f:16:50:3a:7d:d0:d8:13:c2 (ED25519)
+80/tcp open  http    Apache httpd 2.4.18 ((Ubuntu))
+|_http-server-header: Apache/2.4.18 (Ubuntu)
+|_http-title: Site doesn't have a title (text/html).
+Service Info: OSs: Unix, Linux; CPE: cpe:/o:linux:linux_kernel
+
+Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+# Nmap done at Thu Jun 10 16:36:32 2021 -- 1 IP address (1 host up) scanned in 60.59 seconds
 
 ```
 We have port 21 FTP which is anonymous login allowed, 22 SSH with ubuntu running and 80 HTTP open. Let's see whats in the website.
 
---webpage--
+![](Images/web.png)
 
 Nothing interesting from this webpage. 
 
@@ -51,6 +83,7 @@ In task.txt file :
 ```
 In locks.txt file we found some lists of words looks like passwords.
 
+Answer is the **lin**.
 # What service can you bruteforce with the text file found?
 
 Answer must be '**SSH**' any other service we haven't found.
@@ -119,7 +152,7 @@ User lin may run the following commands on bountyhacker:
 **tar** is allowed to run as superuser. Let's see our friend *GTFObins* what got here is link to documentation.
 https://gtfobins.github.io/gtfobins/tar/
 
---gtfobins--
+![](Images/gtfobins.png)
 
 I change this little bit.
 ```bash
@@ -137,3 +170,6 @@ root.txt
 root@bountyhacker:/root# cat root.txt
 THM{**********}
 ```
+Thx for the reading !!
+
+![](../Chocolate-factory/Images/giphy.gif)
