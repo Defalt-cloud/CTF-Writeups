@@ -1,3 +1,4 @@
+![](Images/laCoyOK.png)
 What we can learn from this machine :
 * enumerations
 * local-file-inclusion (LFI)
@@ -23,7 +24,7 @@ Service detection performed. Please report any incorrect results at https://nmap
 ```
 Looks like we got the port 80 http website named **My blog** and port 22 ssh.
 
-----webpage-----
+![](Images/web.png)
 
 Let's look into that blog posts. After we change into that post. You can see our url change into the **article?name=hacking** looks like file inclusion.
 
@@ -31,7 +32,7 @@ Documentation abot LFI : https://www.acunetix.com/blog/articles/local-file-inclu
 
 Let's try to get **/etc/passwd** list from this.
 
----passwd---
+![](Images/passwd.png)
 
 Looks like we got our username:password let's try to log into our user through ssh.
 
@@ -63,7 +64,7 @@ User falconfeast may run the following commands on inclusion:
 
 https://gtfobins.github.io/gtfobins/socat/#sudo
 
------gtfobins-------
+![](Images/gtfobins.png)
 
 ```bash
 falconfeast@inclusion:~$ sudo socat stdin exec:/bin/sh

@@ -1,3 +1,9 @@
+![](Images/qnV5dJQ.png)
+What we can learn from this machine 
+* Enumerations
+* tar crontab
+* PHP-reverse-shell
+* wfuzz 
 
 Let's start with a nmap scan. 
 ```
@@ -25,11 +31,11 @@ Service detection performed. Please report any incorrect results at https://nmap
 ```
 Looks like we got a web page called **gilla CMS** and we got a port 22 ssh open. 
 
----web page---
+![](Images/home.png)
 
 Let's run a dirb scan just in case. Dirb give me a ton of directories. Among them I found this login page. (cmess.thm/admin/)
 
----admin---
+![](Images/admin.png)
 
 If we look at the hints. It told us to ``Have you tried fuzzing for subdomains?`` fuzz let's do this with wfuzz.
 
@@ -61,7 +67,7 @@ Requests/sec.: 56.49411
 ```
 we get a subdomain dev.cmess.thm. We add it to our /etc/hosts file to the same IP address as of cmess.thm. we can see the page like this.
 
----dev----
+![](Images/web.png)
 
 It seems to be a chat between user andre and the support. And we get the email and password for the user andre which can be used for login in the cms. 
 
@@ -70,17 +76,17 @@ Our credentials
 * Email: andre@cmess.thm
 * Password: KPFTN_f2yxe%
 
----about---
+![](Images/about.png)
 
 After the login you can see the **Gila CMS** version number. But I didn't go ahead and search for exploit. Looking around, we see that we have the ability to upload files to the machine at **Content -> File Manager** option. 
 
----upload---
+![](Images/upload.png)
 
 We can upload the **php-rev-shell** now. Let's setup a netcat listner and upload the file.
 
 After we upload it. You can find it in assests. 
 
----shell---
+![](Images/shell.png)
 
 After we execute it. We got the call back.
 
@@ -147,7 +153,7 @@ Sorry, user andre may not run sudo on cmess.
 ```
 We can't run sudo with this user. Let's run a linpeas and see what we got.
 
----linpeas----
+![](Images/linpeas.png)
 
 Linpeas shows us some interesting cron jobs.linpeas marks it as 99% PE vector. We see that the cron job backups everyting under the folder **/home/andre/backup** to the /tmp folder as a **tar**. For tar ing the files, it uses wildcard. Googling for a bit, we find that this wildcard can be exploited.
 
@@ -199,6 +205,7 @@ root@cmess:~#
 ```
 
 Thx for reading !!
+
 Have a nice day
 
 
