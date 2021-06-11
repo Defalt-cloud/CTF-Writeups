@@ -1,0 +1,55 @@
+
+-----------------
+DIRB v2.22    
+By The Dark Raver
+-----------------
+
+OUTPUT_FILE: scans/dirb-output
+START_TIME: Fri Jun 11 17:48:54 2021
+URL_BASE: http://cmess.thm/
+WORDLIST_FILES: /opt/seclist/Discovery/Web-Content/raft-medium-directories.txt
+OPTION: Not Recursive
+
+-----------------
+
+GENERATED WORDS: 29984
+
+---- Scanning URL: http://cmess.thm/ ----
++ http://cmess.thm/admin (CODE:200|SIZE:1580)
++ http://cmess.thm/tmp (CODE:301|SIZE:312)
++ http://cmess.thm/search (CODE:200|SIZE:3851)
++ http://cmess.thm/themes (CODE:301|SIZE:318)
++ http://cmess.thm/login (CODE:200|SIZE:1580)
++ http://cmess.thm/tag (CODE:200|SIZE:3874)
++ http://cmess.thm/sites (CODE:301|SIZE:316)
++ http://cmess.thm/feed (CODE:200|SIZE:735)
++ http://cmess.thm/category (CODE:200|SIZE:3862)
++ http://cmess.thm/blog (CODE:200|SIZE:3851)
++ http://cmess.thm/lib (CODE:301|SIZE:312)
++ http://cmess.thm/api (CODE:200|SIZE:0)
++ http://cmess.thm/assets (CODE:301|SIZE:318)
++ http://cmess.thm/author (CODE:200|SIZE:3590)
++ http://cmess.thm/tags (CODE:200|SIZE:3139)
++ http://cmess.thm/about (CODE:200|SIZE:3353)
++ http://cmess.thm/Search (CODE:200|SIZE:3851)
++ http://cmess.thm/log (CODE:301|SIZE:312)
++ http://cmess.thm/index (CODE:200|SIZE:3851)
++ http://cmess.thm/1 (CODE:200|SIZE:4078)
++ http://cmess.thm/src (CODE:301|SIZE:312)
++ http://cmess.thm/fm (CODE:200|SIZE:0)
++ http://cmess.thm/cm (CODE:500|SIZE:0)
++ http://cmess.thm/0 (CODE:200|SIZE:3851)
++ http://cmess.thm/About (CODE:200|SIZE:3339)
++ http://cmess.thm/01 (CODE:200|SIZE:4078)
++ http://cmess.thm/Author (CODE:200|SIZE:3590)
++ http://cmess.thm/server-status (CODE:403|SIZE:274)
++ http://cmess.thm/Category (CODE:200|SIZE:3862)
++ http://cmess.thm/Index (CODE:200|SIZE:3851)
++ http://cmess.thm/Tags (CODE:200|SIZE:3139)
++ http://cmess.thm/001 (CODE:200|SIZE:4078)
++ http://cmess.thm/Feed (CODE:200|SIZE:735)
++ http://cmess.thm/SEARCH (CODE:200|SIZE:3851)
++ http://cmess.thm/1c (CODE:200|SIZE:4078)
++ http://cmess.thm/1qaz2wsx (CODE:200|SIZE:4078)
++ http://cmess.thm/ABOUT (CODE:200|SIZE:3339)
++ http://cmess.thm/Tag (CODE:200|SIZE:3874)
