@@ -1,0 +1,4 @@
+/assets               (Status: 301) [Size: 194] [--> http://10.10.236.36:8765/assets/]
+/home.php             (Status: 302) [Size: 1993] [--> ../index.php]
+/index.php            (Status: 200) [Size: 1363]
+/auth                 (Status: 301) [Size: 194] [--> http://10.10.236.36:8765/auth/]
