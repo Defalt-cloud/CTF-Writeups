@@ -1,6 +1,11 @@
-Agent Sudo :
+You found a secret server located under the deep sea. Your task is to hack inside the server and reveal the truth.
 
-You found a secret server located under the deep sea. Your task is to hack inside the server and reveal the truth. 
+What we can learn from this machine :
+* Hydra 
+* Enumerations
+* Sudo exploit
+* JohnTheRipper zip file hash crack
+* Binwalk / Steghide usage
 
 # Task 2 : Enumerate
 ```
@@ -26,7 +31,7 @@ Service detection performed. Please report any incorrect results at https://nmap
 ## How many open ports?
 In nmap scan we got port 21 ftp open, 22 ssh open ubuntu and port 80 website named **Annoucement**.
 
----web---
+![](Images/web.png)
 
 In port 80 you can see this message.txt :
 
@@ -35,8 +40,7 @@ In port 80 you can see this message.txt :
 ## How you redirect yourself to a secret page?
 After we change the user-agent: to C you redirected to this site
 
-http://10.10.169.116/agent_C_attention.php
-
+![](Images/user%20agent.png)
 ## What is the agent name?
 In our secret page we can see this message to chris user.
 ```
@@ -50,6 +54,8 @@ Agent R
 # Task 3 : Hash cracking and brute-force 
 ## FTP password
 Let's bruteforce the ftp server with hydra. 
+
+![](Images/ftp%20crack.png)
 
 ftp server credentials :
 * host: 10.10.169.116   
@@ -76,7 +82,11 @@ All these alien like photos are fake! Agent R stored the real picture inside you
 From,
 Agent C
 ```
-Let's investigate our pictures. First I tried **cute-alien.jpg** with steghide.
+Let's take a look into our pictures. 
+
+![](Images/ezgif.com-gif-maker.png)
+
+First I tried **cute-alien.jpg** with steghide.
 
 ```bash
 ┌─[✗]─[visith@parrot]─[~/CTF/thm/Agent-sudo/ftp]
@@ -213,7 +223,7 @@ b03d975e8c92a7c****************
 We get our user flag. Let's see what is that **Alien_autospy.jpg** file.
 After view that image. I reverse image search this. 
 
-----fox---
+![](Images/image%20search.png)
 
 # Task 5 Privilege escalation 
 Now let's try to get in to root. Before we run any of the scripts we can look what we can run as a root.
@@ -236,7 +246,7 @@ james@agent-sudo:~$
 ## CVE number for the escalation 
 User james cannot execute **/bin/bash** . Let's run linpeas.
 
----linpeas---
+![](Images/linpeas.png)
 
 We can search this sudo version can be exploit. After some time I found this exploit.
 
