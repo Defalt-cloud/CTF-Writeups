@@ -1,5 +1,10 @@
+![](Images/fowsniff.png)
+What we can learn from this machine:
+* Enumerations
+* Hash crack
+* Hydra bruteforce
+* Metasploitable pop3 login bruteforce
 ## Using nmap, scan this machine. What ports are open?
-
 Running nmap scan :
 ```
 # Nmap 7.91 scan initiated Sat Jun 19 15:43:03 2021 as: nmap -sC -sV -A -oN scans/nmap-scan 10.10.209.184
@@ -33,11 +38,11 @@ Found : port 22 ssh open to ubuntu box, port 80 http open to website named Fowsn
 
 Let's go to our web page that shows nmap. After we get to web page you can see this. 
 
-----web page----
+![](Images/web.png)
 
 Before we enumerate further more let's start a gobuster and nikto scan. After sometime I read the whole home page on that web page. Looks like website got hacked. They said their twitter acc is hack too. 
 
-----notice----
+![](Images/home%20page%20notice.png)
 
 Before we check that twitter let's see what is our gobuster found. Nikto nothing found interesting. 
 
@@ -53,17 +58,17 @@ Before we check that twitter let's see what is our gobuster found. Nikto nothing
 ```
 When we go into that **/security.txt** you can see this message from the hacker.
 
-----security-----
+![](Images/security%20txt.png)
 
 ## Using Google, can you find any public information about them?
 
 Let's check that twitter acc maybe hacker put something there to us.
 
-----twitter----
+![](Images/twitter.png)
 
 We got a paste-bin link. Nice !! When we got in to that paste bin link you can see the **password leaks**.
 
------pastebin----
+![](Images/passwd%20leak.png)
 
 ## Can you decode these md5 hashes? You can even use sites like hashkiller to decode them.
 
@@ -121,13 +126,13 @@ https://electrictoolbox.com/pop3-commands/ : About pop3 commands
 
 After viewing our first email to seina. I found this ssh credentials on that mail.
 
-----ssh------
+![](Images/ssh.png)
 
 ## In the email, who send it? Using the password from the previous question and the senders username, connect to the machine using SSH.
 
 We got our ssh password but we got lot of users How we know who is correct one. For that we can run a hydra attack with our found password.
 
----hydra----
+![](Images/hydra.png)
 
 We got our user as **baksteen**.
 
@@ -139,7 +144,7 @@ Our credentials :
 
 Let's connect into the ssh
 
----ssh login----
+![](Images/ssh%20login.png)
 
 ```bash
 baksteen@fowsniff:~$ sudo -l
@@ -148,7 +153,7 @@ Sorry, user baksteen may not run sudo on fowsniff.
 ```
 We can't run sudo here. Okay then !! let's run a linpeas. Let's see What we got here !!
 
-----linpeas----
+![](Images/linpeas.png)
 
 We found this cube.sh file in **/opt/** directory. when we look into the **/etc/update-motd.d** folder and the 00-header file shows that the /opt/cube/cube.sh file is run when a user connects to the machine using SSH (and that it will run as the root user).  
 
