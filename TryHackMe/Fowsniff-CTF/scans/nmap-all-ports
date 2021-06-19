@@ -1,0 +1,20 @@
+# Nmap 7.91 scan initiated Sat Jun 19 16:06:37 2021 as: nmap -sC -p- -oN scans/nmap-all-ports 10.10.209.184
+Nmap scan report for 10.10.209.184
+Host is up (0.16s latency).
+Not shown: 65531 closed ports
+PORT    STATE SERVICE
+22/tcp  open  ssh
+| ssh-hostkey: 
+|   2048 90:35:66:f4:c6:d2:95:12:1b:e8:cd:de:aa:4e:03:23 (RSA)
+|   256 53:9d:23:67:34:cf:0a:d5:5a:9a:11:74:bd:fd:de:71 (ECDSA)
+|_  256 a2:8f:db:ae:9e:3d:c9:e6:a9:ca:03:b1:d7:1b:66:83 (ED25519)
+80/tcp  open  http
+| http-robots.txt: 1 disallowed entry 
+|_/
+|_http-title: Fowsniff Corp - Delivering Solutions
+110/tcp open  pop3
+|_pop3-capabilities: TOP UIDL RESP-CODES AUTH-RESP-CODE USER CAPA PIPELINING SASL(PLAIN)
+143/tcp open  imap
+|_imap-capabilities: ENABLE SASL-IR more capabilities Pre-login have post-login ID listed OK AUTH=PLAINA0001 LITERAL+ LOGIN-REFERRALS IDLE IMAP4rev1
+
+# Nmap done at Sat Jun 19 16:48:11 2021 -- 1 IP address (1 host up) scanned in 2494.92 seconds
