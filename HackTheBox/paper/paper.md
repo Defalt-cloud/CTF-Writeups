@@ -39,7 +39,7 @@ Nmap done: 1 IP address (1 host up) scanned in 56.97 seconds
 Nmap result shows that SSH , SSL and Apache are available on their default ports. Let's take look at webpage. Maybe we can find something.
 
 ## Website port 80
-![](website.png)
+![](images/website.png)
 
 ## Looking for X-backend
 I didn't find anything useful on website.Let's try to find backend server. For that we using curl with location flag (-L) for see which route our website take.
@@ -61,15 +61,14 @@ Looks like we got our self a winner. We found our backend server **office.paper*
 ## Blunder Tiffin Paper Company
 When we got to **office.paper** we can see this website.
 
-![](office-paper.png)
+![](images/office-paper.png)
 
 When we scroll down a bit we can see a comment(hint) on one of post.
 
-![](comment.png)
+![](images/comment.png)
 
 ## Analyze with Wappalyzer
-![](wappa.jpg)
-
+![](images/wappa.jpg)
 Wappalyzer reveals website running on wordpress 5.2.3. Let's try to run wpscan.
 
 ```bash
@@ -84,27 +83,27 @@ https://wpscan.com/vulnerability/3413b879-785f-4c9f-aa8a-5a4a1d5e0ba2
 
 So it has a vulnerability could allow an unauthenticated user to view private or draft posts due to an issue within WP_Query. Let's try it.
 
-![](vurnablilty%20wordpress.png)
+![](images/vurnablilty%20wordpress.png)
 
 After reading a draft we can see secret registeration url and another server called **chat.office.paper**. Let's add it to **/etc/hosts/** and click the link. When we click the link we can see new user registeration site.
 
-![](register.png)
+![](images/register.png)
 
 After register and log with your new account. If you surf the webpage You will find a general Chat .When you scroll up You will find that **DwightKSchrute** is the admin and he added a Bot named **Recyclops** .You will also find out that You cannot Type in the General Chat But you can Direct Message the **Bot Recyclops**. When I Type **Recyclops Help** it gives me set of instructions.
 
-![](bot.png)
+![](images/bot.png)
 
 The Instructions state that we can ask the Recyclops Bot A file , to List files and many more. Which was a Interesting! , So I tried to get User.txt Using The Recyclops Bot But was Unsuccessful Because It Says Access denied. 
 
-![](access%20denied.png)
+![](images/access%20denied.png)
 
 After messing around I reach the jackpot. When you got **hubot dir** you can see some of interesting files.
 
-![](hubot.png)
+![](images/hubot.png)
 
 When you try to look into **.env** file. you can get the password to **dwight** account.
 
-![](password.png)
+![](images/password.png)
 
 ## Login to user **dwight**
 When we log into **dwight** acc we can get a user flag.
@@ -169,7 +168,7 @@ linpeas.sh.1            100%[=============================>] 131.02K   266KB/s  
 ````
 * Linpeas results :
 
-![](polkit%20linpeas.png)
+![](images/polkit%20linpeas.png)
 
 Our linpeas result shows this machine vureable to polkit exploit(CVE-2021-3560).
 
