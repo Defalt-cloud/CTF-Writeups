@@ -1,14 +1,15 @@
 # CTF-Writeup Database
-Capture The Flags, or CTFs, are a kind of computer security competition.
-Teams of competitors (or just individuals) are pitted against each other in a test of computer security skill.
+## What is CTF?
+Capture The Flags, or CTFs, are a kind of computer security competition. Teams of competitors (or just individuals) are pitted against each other in a test of computer security skill.
 
+Sometime I put stuff only on my blogger specially currently active HTB machines.
 My Blogger page : https://defaltlibary.blogspot.com/
+
 ## HackTheBox
 * [Delivery](https://github.com/Defalt-cloud/CTF-Writeups/tree/main/HackTheBox/Delivery)
 * [Script kiddie](https://github.com/Defalt-cloud/CTF-Writeups/blob/main/HackTheBox/Script%20kiddie/scriptkiddie.md)
 * [Spectra](https://github.com/Defalt-cloud/CTF-Writeups/blob/main/HackTheBox/Spectre/spectra.md)
 * [Paper](https://github.com/Defalt-cloud/CTF-Writeups/blob/main/HackTheBox/paper/paper.md)
-
 * [Starting-point Tier 0](https://github.com/Defalt-cloud/CTF-Writeups/blob/main/HackTheBox/Starting-Point/Tier%200/merge.md)
 
 ## TryHackMe
