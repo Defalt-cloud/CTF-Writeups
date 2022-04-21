@@ -5,11 +5,14 @@ Capture The Flags, or CTFs, are a kind of computer security competition. Teams o
 Sometime I put stuff only on [Blogger]( https://defaltlibary.blogspot.com/) specially currently active HTB machines.
 
 ## HackTheBox
-* [Delivery](https://github.com/Defalt-cloud/CTF-Writeups/tree/main/HackTheBox/Delivery)
-* [Script kiddie](https://github.com/Defalt-cloud/CTF-Writeups/blob/main/HackTheBox/Script%20kiddie/scriptkiddie.md)
-* [Spectra](https://github.com/Defalt-cloud/CTF-Writeups/blob/main/HackTheBox/Spectre/spectra.md)
+* [Delivery](https://defaltlibary.blogspot.com/2021/06/delivery-htb-box.html)
+* [Script kiddie](https://defaltlibary.blogspot.com/2021/06/script-kiddie-hackthebox.html)
+* [Spectra](https://defaltlibary.blogspot.com/2021/06/spectra-hackthebox.html)
 * [Paper](https://defaltlibary.blogspot.com/2022/04/paper-hackthebox-coming-soon.html)
-* [Starting-point Tier 0](https://github.com/Defalt-cloud/CTF-Writeups/blob/main/HackTheBox/Starting-Point/Tier%200/merge.md)
+* [Cap](https://defaltlibary.blogspot.com/2021/06/cap-hackthebox.html)
+* [Knife](https://defaltlibary.blogspot.com/2021/06/knife-hackthebox.html)
+* [Armageddon](https://defaltlibary.blogspot.com/2021/06/armageddon-hackthebox.html)
+* [Starting-point Tier 0](https://defaltlibary.blogspot.com/2022/04/this-blog-post-contain-all-tier-0.html)
 
 ## TryHackMe
 * [Agent-sudo](https://github.com/Defalt-cloud/CTF-Writeups/blob/main/TryHackMe/Agent-sudo/agent-sudo.md)
