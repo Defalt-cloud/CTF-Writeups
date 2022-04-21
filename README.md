@@ -2,7 +2,16 @@
 ## What is CTF?
 Capture The Flags, or CTFs, are a kind of computer security competition. Teams of competitors (or just individuals) are pitted against each other in a test of computer security skill.
 
-Sometime I put stuff only on [Blogger]( https://defaltlibary.blogspot.com/) specially currently active HTB machines.
+Social Media:
+* [Instergram](https://www.instagram.com/visith_sipsarith/?hl=en)
+* [Linkedin](https://www.linkedin.com/in/visith-sipsarith-7b8b051a9/)
+* [Twitter](https://twitter.com/_visith)
+* [Blogger]( https://defaltlibary.blogspot.com/)
+
+Quick Jump Link to the list :
+* [Hack-The-Box](https://github.com/Defalt-cloud/CTF-Writeups#hackthebox)
+* [Try-Hack-Me](https://github.com/Defalt-cloud/CTF-Writeups#tryhackme)
+* [Pico-CTF](https://github.com/Defalt-cloud/CTF-Writeups#pico-ctf)
 
 ## HackTheBox
 * [Delivery](https://defaltlibary.blogspot.com/2021/06/delivery-htb-box.html)
