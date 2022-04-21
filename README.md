@@ -8,7 +8,7 @@ Sometime I put stuff only on [Blogger]( https://defaltlibary.blogspot.com/) spec
 * [Delivery](https://github.com/Defalt-cloud/CTF-Writeups/tree/main/HackTheBox/Delivery)
 * [Script kiddie](https://github.com/Defalt-cloud/CTF-Writeups/blob/main/HackTheBox/Script%20kiddie/scriptkiddie.md)
 * [Spectra](https://github.com/Defalt-cloud/CTF-Writeups/blob/main/HackTheBox/Spectre/spectra.md)
-* [Paper](https://github.com/Defalt-cloud/CTF-Writeups/blob/main/HackTheBox/paper/paper.md)
+* [Paper](https://defaltlibary.blogspot.com/2022/04/paper-hackthebox-coming-soon.html)
 * [Starting-point Tier 0](https://github.com/Defalt-cloud/CTF-Writeups/blob/main/HackTheBox/Starting-Point/Tier%200/merge.md)
 
 ## TryHackMe
