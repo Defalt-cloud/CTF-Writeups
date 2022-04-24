@@ -304,5 +304,6 @@ We don't need to login to see root flag by using this command.
 ```bash
 sudo -u root iconv  -f 8859_1 -t 8859_1 "/root/root.txt"
 ```
+My github write-up : https://github.com/Defalt-cloud/CTF-Writeups/blob/main/TryHackMe/Tech_Supp0rt:1/Tech_Supp0rt.md
 
 Thx for reading !! Have a nice day

